@@ -1,695 +1,413 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal LIANCI - Liga de Cirurgia</title>
+    <title>LIANCI - Portal da Secretaria</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         :root {
-            /* NOVA PALETA DE CORES LIANCI/URCA */
-            --primary: #004d40; /* Verde Floresta Escuro */
-            --primary-light: #00695c;
-            --secondary: #333333; 
-            --accent: #b2945d; /* Dourado/Bronze da logo */
-            --light: #ffffff; 
-            --background: #f4f7f6;
-            --text-on-primary: #ffffff;
+            --primary-dark: #00332c;
+            --primary: #004d40;
+            --accent: #b2945d;
+            --accent-light: #d4bc8d;
+            --bg-light: #f4f7f6;
+            --white: #ffffff;
+            --text-main: #1a202c;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --warning: #ed8936;
         }
 
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            background-color: var(--background); 
-            color: var(--secondary); 
-            line-height: 1.6;
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
         }
 
-        /* Sidebar/Menu */
-        nav { 
-            background: var(--primary); 
-            color: var(--text-on-primary); 
-            padding: 1rem 2rem; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-bottom: 4px solid var(--accent);
+        nav {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: var(--white);
+            padding: 0 5%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--accent);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-        
-        .logo-title-container {
+
+        .brand { display: flex; align-items: center; gap: 15px; }
+        .brand-text h1 { margin: 0; font-family: 'Merriweather', serif; font-size: 1.2rem; letter-spacing: 1px; }
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-links button {
+            background: transparent;
+            border: none;
+            color: var(--white);
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .nav-links button:hover { color: var(--accent-light); }
+        .nav-links button.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        .slide-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 40px;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+            min-height: 500px;
+            border-top: 5px solid var(--primary);
+        }
+        .slide-card.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2.section-header {
+            font-family: 'Merriweather', serif;
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
-        /* Ajuste a imagem da logo aqui */
-        .logo-title-container img {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            background-color: white;
-            object-fit: contain;
-        }
 
-        .logo-title-container h1 {
-            font-size: 1.4rem;
-            margin: 0;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .menu-links button { 
-            background: none; 
-            border: 1px solid transparent; 
-            color: var(--text-on-primary); 
-            cursor: pointer; 
-            margin: 0 5px; 
-            font-weight: 700; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-        
-        .menu-links button:hover { 
-            background: rgba(255,255,255,0.1); 
-            border-color: var(--accent);
-        }
-        
-        .menu-links button.active { 
-            background: var(--accent); 
-            color: white; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        /* CONTAINER PRINCIPAL */
-        .container { 
-            max-width: 1000px; 
-            margin: 3rem auto; 
-            padding: 2.5rem; 
-            background: var(--light); 
-            border-radius: 12px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08); 
-        }
-        
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h2 { 
-            border-bottom: 3px solid var(--primary); 
-            padding-bottom: 10px; 
-            color: var(--primary); 
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 1.6rem;
-            margin-top: 0;
-        }
-        
-        h3 { 
-            color: var(--primary); 
-            margin-top: 2rem; 
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-        
-        /* Forms */
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: .5rem; font-weight: 700; font-size: 0.9rem; color: #555;}
-        input, select, textarea { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-family: inherit;
-            transition: 0.3s;
-            background-color: #f8fafc;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent);
-            outline: none;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(178, 148, 93, 0.2);
-        }
-        
-        button.btn-action { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 12px 24px; 
-            cursor: pointer; 
-            font-size: 1rem; 
-            border-radius: 8px; 
-            font-weight: 700;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 100%;
-        }
-        
-        button.btn-action:hover { 
-            background: var(--primary-light); 
-            transform: translateY(-2px);
-        }
-        
-        button.btn-danger { 
-            background: #e53e3e; 
-            color: white; 
-            border: none; 
-            padding: 6px 12px; 
-            cursor: pointer; 
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-        
-        button.btn-danger:hover { background: #c53030; }
-
-        /* Tables */
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 1rem; 
+        .admin-panel {
+            background: #fdfaf4;
+            border: 1px solid var(--accent);
+            padding: 25px;
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 0 1px #e2e8f0;
+            margin-bottom: 30px;
         }
-        
-        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #e2e8f0;}
-        
-        th { 
-            background: var(--primary); 
-            color: white;
-            font-weight: 600; 
-            letter-spacing: 0.5px;
-        }
-        
-        tr:nth-child(even) { background-color: #f8fafc; }
-        tr:hover { background-color: #f1f5f9; }
 
-        /* Admin Panels */
-        .admin-only { 
-            display: none; 
-            background: #ffffff; 
-            padding: 20px; 
-            border: 2px solid var(--accent); 
-            border-radius: 8px; 
-            margin-top: 1.5rem; 
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-        
-        .admin-only::before {
-            content: "Área Restrita - Secretaria";
-            position: absolute;
-            top: -12px;
-            left: 15px;
+        .table-wrapper { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--primary); color: var(--white); padding: 12px; text-align: left; font-size: 0.85rem; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .bg-presenca { background: #c6f6d5; color: #22543d; }
+        .bg-falta { background: #fed7d7; color: #9b2c2c; }
+        .bg-justificada { background: #bee3f8; color: #2b6cb0; }
+
+        .btn-gold {
             background: var(--accent);
-            color: white;
-            padding: 2px 10px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            border-radius: 12px;
-        }
-        
-        /* Badges */
-        .badge { 
-            padding: 4px 10px; 
-            border-radius: 12px; 
-            font-size: 0.75rem; 
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
             font-weight: 700;
-            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        
-        .badge-estagio { background: #c6f6d5; color: #22543d; }
-        .badge-liga { background: #fefcbf; color: #744210; }
-        
-        /* Library items */
-        .category-block { margin-bottom: 2rem; }
-        .category-block h3 {
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-            color: var(--primary);
-        }
-        .material-item { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 12px; 
-            border-bottom: 1px solid #e2e8f0; 
-            align-items: center;
-        }
-        .material-item a { 
-            color: var(--primary); 
-            text-decoration: none; 
-            font-weight: 600;
-        }
-        .material-item a:hover { color: var(--accent); text-decoration: underline; }
+        .btn-gold:hover { background: var(--primary-dark); }
+
+        .day-item { border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; }
+        .day-header { background: #f8fafc; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 600; }
+        .day-content { display: none; padding: 20px; border-top: 1px solid #e2e8f0; }
+
+        .view-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo-title-container">
-        <img src="logo.jpg" alt="Logo LIANCI" onerror="this.src='https://via.placeholder.com/65x65.png?text=LIANCI'">
-        <h1>PORTAL LIANCI</h1>
+    <div class="brand">
+        <div class="brand-text">
+            <h1>PORTAL LIANCI</h1>
+            <small style="color: var(--accent-light);">Secretaria Acadêmica</small>
+        </div>
     </div>
-    <div class="menu-links">
-        <button id="nav-frequencia" class="active" onclick="showSection('frequencia')">Frequência</button>
-        <button id="nav-biblioteca" onclick="showSection('biblioteca')">Biblioteca</button>
-        <button id="nav-membros" class="admin-only" style="display:none;" onclick="showSection('membros')">Gestão de Membros</button>
-        <button id="btn-login" onclick="toggleLogin()" style="border: 1px solid var(--accent);">Acesso Sec.</button>
+    <div class="nav-links">
+        <button id="nav-freq" class="active" onclick="showSlide('freq')">Frequência</button>
+        <button id="nav-atas" onclick="showSlide('atas')">Atas</button>
+        <button id="nav-bib" onclick="showSlide('bib')">Biblioteca</button>
+        <button id="nav-adm" style="display:none;" onclick="showSlide('adm')">Membros</button>
+        <button id="btn-login-main" onclick="toggleLogin()" style="background: var(--accent); color: white;">Login Sec.</button>
     </div>
 </nav>
 
 <div class="container">
     
-    <section id="frequencia" class="section active">
-        <h2>Frequência dos Membros</h2>
-        <p>Acompanhe o painel de presenças e faltas da liga acadêmica.</p>
-
-        <div class="admin-only">
-            <div class="form-group">
-                <label>Tema / Descrição da Aula:</label>
-                <input type="text" id="tema-aula" placeholder="Ex: Aula Prática de Suturas - 12/05">
-            </div>
-            <p style="font-weight: bold; margin-bottom: 10px; color: var(--primary);">Selecione os membros PRESENTES:</p>
-            <div id="lista-chamada" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                </div>
-            <br>
-            <button class="btn-action" onclick="salvarChamada()">Salvar Frequência da Aula</button>
-        </div>
-
-        <div style="overflow-x: auto;">
-            <table id="tabela-frequencia">
-                <thead>
-                    <tr>
-                        <th>Membro</th>
-                        <th style="text-align: center;">Presenças</th>
-                        <th style="text-align: center;">Faltas</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-frequencia">
-                    <tr><td colspan="3">Carregando dados do sistema...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section id="biblioteca" class="section">
-        <h2>Biblioteca Digital</h2>
-        <p>Acesse os materiais de estudo, protocolos e atas de reuniões.</p>
-
-        <div class="admin-only">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group">
-                    <label>Título do Material:</label>
-                    <input type="text" id="mat-titulo" placeholder="Ex: Edital Prosel 2026">
-                </div>
-                <div class="form-group">
-                    <label>Categoria:</label>
-                    <input type="text" id="mat-categoria" list="categorias-list" placeholder="Ex: Editais, Aulas, Atas...">
-                    <datalist id="categorias-list">
-                        <option value="Aulas">
-                        <option value="Atas">
-                        <option value="Editais">
-                        <option value="Protocolos">
-                    </datalist>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>Link do Material (Google Drive, YouTube, Docs):</label>
-                <textarea id="mat-link" rows="2" placeholder="Cole o link de acesso aqui..."></textarea>
-            </div>
-            
-            <button class="btn-action" onclick="salvarMaterial()">Publicar Material</button>
-        </div>
-
-        <div id="acervo-biblioteca">
-            <p>Carregando acervo digital...</p>
-        </div>
-    </section>
-
-    <section id="membros" class="section">
-        <h2>Gestão de Membros</h2>
+    <!-- FREQUENCIA -->
+    <section id="slide-freq" class="slide-card active">
+        <h2 class="section-header"><i class="fa-solid fa-calendar-check"></i> Frequência</h2>
         
-        <div class="admin-only" style="display: block;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>Nome Completo:</label><input type="text" id="adm-nome"></div>
-                <div class="form-group"><label>Matrícula:</label><input type="text" id="adm-mat"></div>
-                <div class="form-group">
-                    <label>Semestre:</label>
-                    <select id="adm-sem">
-                        <option>1º Semestre</option><option>2º Semestre</option><option>3º Semestre</option>
-                        <option>4º Semestre</option><option>5º Semestre</option><option>6º Semestre</option>
-                        <option>7º Semestre</option><option>8º Semestre</option><option>9º Semestre</option>
-                        <option>10º Semestre</option><option>11º Semestre</option><option>12º Semestre</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Cargo / Função:</label><input type="text" id="adm-cargo" placeholder="Ex: Ligante, Diretor, Presidente..."></div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Modalidade de Ingresso:</label>
-                    <select id="adm-mod">
-                        <option value="Estágio + Liga">Estágio + Liga</option>
-                        <option value="Só Liga">Só Liga</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-action" onclick="cadastrarMembro()" style="margin-top: 10px;">Cadastrar Novo Membro</button>
-
-            <h3 style="margin-top: 2.5rem;">Membros Cadastrados</h3>
-            <div style="overflow-x: auto;">
-                <table id="tabela-membros-admin">
-                    <thead>
-                        <tr><th>Nome</th><th>Matrícula</th><th>Modalidade</th><th>Ação</th></tr>
-                    </thead>
-                    <tbody id="tbody-membros-admin"></tbody>
+        <div class="admin-panel admin-only" style="display:none;">
+            <h3>Nova Chamada</h3>
+            <input type="text" id="aula-tema" placeholder="Tema da Aula" style="width:100%; padding:10px; margin-bottom:15px;">
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Membro</th><th>Status</th></tr></thead>
+                    <tbody id="tbody-chamada-input"></tbody>
                 </table>
             </div>
+            <button class="btn-gold" style="margin-top:15px;" onclick="salvarAula()">Salvar Chamada</button>
+        </div>
+
+        <div class="view-toggle">
+            <button class="btn-gold" onclick="switchFreqView('ranking')">Ranking de Faltas</button>
+            <button class="btn-gold" onclick="switchFreqView('dias')">Histórico por Dias</button>
+        </div>
+
+        <div id="freq-view-ranking">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Membro</th>
+                            <th>Presenças</th>
+                            <th>Justificadas</th>
+                            <th>Faltas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-ranking"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="freq-view-dias" style="display:none;">
+            <div id="lista-dias-container"></div>
+        </div>
+    </section>
+
+    <!-- ATAS -->
+    <section id="slide-atas" class="slide-card">
+        <h2 class="section-header"><i class="fa-solid fa-file-lines"></i> Atas de Reunião</h2>
+        <div class="admin-panel admin-only" style="display:none;">
+            <h3>Publicar Ata</h3>
+            <input type="text" id="ata-titulo" placeholder="Título da Ata" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="ata-link" placeholder="Link do Arquivo (Drive)" style="width:100%; padding:10px; margin-bottom:10px;">
+            <button class="btn-gold" onclick="salvarAta()">Adicionar</button>
+        </div>
+        <div id="atas-list"></div>
+    </section>
+
+    <!-- BIBLIOTECA -->
+    <section id="slide-bib" class="slide-card">
+        <h2 class="section-header"><i class="fa-solid fa-book"></i> Biblioteca</h2>
+        <div class="admin-panel admin-only" style="display:none;">
+            <h3>Novo Material</h3>
+            <input type="text" id="bib-titulo" placeholder="Título" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="bib-cat" placeholder="Categoria" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="bib-link" placeholder="Link" style="width:100%; padding:10px; margin-bottom:10px;">
+            <button class="btn-gold" onclick="salvarBib()">Salvar</button>
+        </div>
+        <div id="bib-list"></div>
+    </section>
+
+    <!-- MEMBROS (ADMIN) -->
+    <section id="slide-adm" class="slide-card">
+        <h2 class="section-header"><i class="fa-solid fa-users"></i> Gestão de Membros</h2>
+        <div class="admin-panel">
+            <h3>Cadastrar Membro</h3>
+            <input type="text" id="m-nome" placeholder="Nome" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="m-mat" placeholder="Matrícula" style="width:100%; padding:10px; margin-bottom:10px;">
+            <button class="btn-gold" onclick="cadastrarMembro()">Cadastrar</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>Nome</th><th>Matrícula</th><th>Ação</th></tr></thead>
+                <tbody id="tbody-membros-list"></tbody>
+            </table>
         </div>
     </section>
 
 </div>
 
 <script>
-    // --- CONFIGURAÇÃO FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyA2ef4mY9sm-cVPkAq0bwzBjsgmRLN2_jQ",
         authDomain: "portal-liga-de-cirurgia.firebaseapp.com",
         databaseURL: "https://portal-liga-de-cirurgia-default-rtdb.firebaseio.com",
         projectId: "portal-liga-de-cirurgia",
+        storageBucket: "portal-liga-de-cirurgia.firebasestorage.app",
         messagingSenderId: "408679438531",
         appId: "1:408679438531:web:46667abc7bcdd9b9d2ea76"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // --- CONTROLE DE NAVEGAÇÃO ---
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    function showSlide(id) {
+        document.querySelectorAll('.slide-card').forEach(s => s.classList.remove('active'));
+        document.getElementById('slide-' + id).classList.add('active');
+        document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+        document.getElementById('nav-' + (id==='freq'?'freq':id==='atas'?'atas':id==='bib'?'bib':'adm')).classList.add('active');
         
-        document.querySelectorAll('.menu-links button').forEach(b => b.classList.remove('active'));
-        document.getElementById('nav-' + id).classList.add('active');
-
-        if(id === 'frequencia') carregarDadosFrequencia();
-        if(id === 'biblioteca') carregarBiblioteca();
-        if(id === 'membros') carregarMembrosAdmin();
+        if(id === 'freq') carregarDadosFrequencia();
+        if(id === 'atas') carregarAtas();
+        if(id === 'bib') carregarBiblioteca();
+        if(id === 'adm') carregarMembros();
     }
 
-    // --- AUTENTICAÇÃO E PERSISTÊNCIA ---
-    auth.onAuthStateChanged((user) => {
-        const btnLogin = document.getElementById('btn-login');
-        const adminElements = document.querySelectorAll('.admin-only');
-        const navMembros = document.getElementById('nav-membros');
+    function switchFreqView(view) {
+        document.getElementById('freq-view-ranking').style.display = view === 'ranking' ? 'block' : 'none';
+        document.getElementById('freq-view-dias').style.display = view === 'dias' ? 'block' : 'none';
+    }
 
-        if (user) {
-            btnLogin.innerText = 'Sair do Sistema';
-            btnLogin.style.background = 'var(--accent)';
-            btnLogin.style.borderColor = 'var(--accent)';
-            btnLogin.style.color = 'white';
-            navMembros.style.display = 'inline-block';
-            adminElements.forEach(el => {
-                if(el.closest('#membros') === null) el.style.display = 'block';
-            });
+    auth.onAuthStateChanged(user => {
+        const btn = document.getElementById('btn-login-main');
+        const adminElements = document.querySelectorAll('.admin-only');
+        const navAdm = document.getElementById('nav-adm');
+        if(user) {
+            btn.innerText = "Sair";
+            navAdm.style.display = "block";
+            adminElements.forEach(el => el.style.display = "block");
         } else {
-            btnLogin.innerText = 'Acesso Sec.';
-            btnLogin.style.background = 'transparent';
-            btnLogin.style.borderColor = 'var(--accent)';
-            navMembros.style.display = 'none';
-            adminElements.forEach(el => el.style.display = 'none');
-            if(document.getElementById('membros').classList.contains('active')) {
-                showSection('frequencia');
-            }
+            btn.innerText = "Login Sec.";
+            navAdm.style.display = "none";
+            adminElements.forEach(el => el.style.display = "none");
         }
     });
 
     function toggleLogin() {
-        if (auth.currentUser) {
-            auth.signOut().then(() => alert("Você saiu do sistema de Secretaria."));
-        } else {
-            const email = prompt("E-mail da Secretaria:");
-            if(!email) return;
-            const senha = prompt("Senha:");
-            auth.signInWithEmailAndPassword(email, senha)
-                .catch(error => alert("Erro ao logar. Verifique as credenciais no Firebase Authentication."));
+        if(auth.currentUser) auth.signOut();
+        else {
+            const email = prompt("E-mail:");
+            const pass = prompt("Senha:");
+            if(email && pass) auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
         }
     }
 
-    // --- FREQUÊNCIA ---
     async function carregarDadosFrequencia() {
-        const tbody = document.getElementById('tbody-frequencia');
-        const listaChamada = document.getElementById('lista-chamada');
+        const rankingBody = document.getElementById('tbody-ranking');
+        const diasContainer = document.getElementById('lista-dias-container');
+        const inputChamada = document.getElementById('tbody-chamada-input');
         
-        tbody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
-        listaChamada.innerHTML = '';
+        const membrosSnap = await db.collection("membros").orderBy("nome").get();
+        const aulasSnap = await db.collection("aulas").orderBy("timestamp", "desc").get();
 
-        try {
-            const aulasSnap = await db.collection("aulas").get();
-            const totalAulas = aulasSnap.size;
-            const membrosSnap = await db.collection("membros").orderBy("nome").get();
-            
-            tbody.innerHTML = ''; 
-
-            membrosSnap.forEach((doc) => {
-                const m = doc.data();
-                const membroId = doc.id;
-                
-                let presencas = 0;
-                aulasSnap.forEach(aulaDoc => {
-                    const aula = aulaDoc.data();
-                    if(aula.presentes && aula.presentes.includes(membroId)) {
-                        presencas++;
-                    }
-                });
-
-                const faltas = totalAulas - presencas;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${m.nome}</strong></td>
-                        <td style="text-align: center; color: var(--primary); font-weight: bold;">${presencas}</td>
-                        <td style="text-align: center; color: #e53e3e; font-weight: bold;">${faltas}</td>
-                    </tr>
-                `;
-
-                listaChamada.innerHTML += `
-                    <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" class="check-presenca" value="${membroId}" style="width: 18px; height: 18px; cursor: pointer;"> 
-                        ${m.nome}
-                    </label>
-                `;
-            });
-
-            if(membrosSnap.empty) {
-                tbody.innerHTML = '<tr><td colspan="3">Nenhum membro cadastrado na liga.</td></tr>';
-            }
-        } catch(e) {
-            console.error(e);
-            tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar dados. Verifique o banco.</td></tr>';
-        }
-    }
-
-    function salvarChamada() {
-        const tema = document.getElementById('tema-aula').value;
-        if(!tema) return alert("Por favor, digite o tema ou data da aula!");
-
-        const checkboxes = document.querySelectorAll('.check-presenca');
-        const presentes = [];
-        
-        checkboxes.forEach(chk => {
-            if(chk.checked) presentes.push(chk.value);
+        inputChamada.innerHTML = '';
+        membrosSnap.forEach(doc => {
+            inputChamada.innerHTML += `<tr><td>${doc.data().nome}</td><td>
+                <select class="status-input" data-id="${doc.id}">
+                    <option value="P">Presente</option><option value="F">Falta</option><option value="J">Justificada</option>
+                </select>
+            </td></tr>`;
         });
 
-        const confirmacao = confirm(`Confirmar a chamada "${tema}" com ${presentes.length} presentes?`);
-        if(!confirmacao) return;
-
-        db.collection("aulas").add({
-            tema: tema,
-            dataCadastro: new Date().toLocaleDateString(),
-            presentes: presentes,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            alert("Chamada registrada com sucesso!");
-            document.getElementById('tema-aula').value = '';
-            carregarDadosFrequencia();
-        }).catch(e => alert("Erro ao salvar: " + e.message));
-    }
-
-    // --- GESTÃO DE MEMBROS ---
-    function cadastrarMembro() {
-        const nome = document.getElementById('adm-nome').value;
-        const matricula = document.getElementById('adm-mat').value;
-        
-        if(!nome || !matricula) return alert("Os campos Nome e Matrícula são obrigatórios!");
-
-        const dados = {
-            nome: nome,
-            matricula: matricula,
-            semestre: document.getElementById('adm-sem').value,
-            cargo: document.getElementById('adm-cargo').value,
-            modalidade: document.getElementById('adm-mod').value,
-            dataCadastro: new Date().toLocaleDateString()
-        };
-
-        db.collection("membros").add(dados).then(() => {
-            alert("Membro cadastrado com sucesso!");
-            document.getElementById('adm-nome').value = '';
-            document.getElementById('adm-mat').value = '';
-            document.getElementById('adm-cargo').value = '';
-            carregarMembrosAdmin();
-            carregarDadosFrequencia(); 
-        }).catch(e => alert("Erro ao salvar membro: " + e.message));
-    }
-
-    function carregarMembrosAdmin() {
-        const tbody = document.getElementById('tbody-membros-admin');
-        tbody.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
-
-        db.collection("membros").orderBy("nome").get().then((snap) => {
-            tbody.innerHTML = '';
-            snap.forEach((doc) => {
-                const m = doc.data();
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${m.nome}</td>
-                        <td>${m.matricula}</td>
-                        <td><span class="badge ${m.modalidade === 'Só Liga' ? 'badge-liga' : 'badge-estagio'}">${m.modalidade}</span></td>
-                        <td>
-                            <button class="btn-danger" onclick="excluirMembro('${doc.id}')">Remover</button>
-                        </td>
-                    </tr>
-                `;
+        let ranking = [];
+        membrosSnap.forEach(doc => {
+            let p=0, j=0, f=0;
+            aulasSnap.forEach(aDoc => {
+                const a = aDoc.data();
+                if(a.presentes?.includes(doc.id)) p++;
+                else if(a.justificadas?.includes(doc.id)) j++;
+                else f++;
             });
+            ranking.push({nome: doc.data().nome, p, j, f});
+        });
+        ranking.sort((a,b) => b.f - a.f);
+        rankingBody.innerHTML = ranking.map(r => `<tr><td>${r.nome}</td><td><span class="badge bg-presenca">${r.p}</span></td><td><span class="badge bg-justificada">${r.j}</span></td><td><span class="badge bg-falta">${r.f}</span></td></tr>`).join('');
+
+        diasContainer.innerHTML = '';
+        aulasSnap.forEach(doc => {
+            const a = doc.data();
+            diasContainer.innerHTML += `
+                <div class="day-item">
+                    <div class="day-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+                        <span>📅 ${a.dataCadastro} - ${a.tema}</span><i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="day-content">
+                        <p><strong>Presentes:</strong> ${membrosSnap.docs.filter(m => a.presentes?.includes(m.id)).map(m => m.data().nome).join(', ') || 'Nenhum'}</p>
+                        <p><strong>Faltas:</strong> ${membrosSnap.docs.filter(m => !a.presentes?.includes(m.id) && !a.justificadas?.includes(m.id)).map(m => m.data().nome).join(', ') || 'Nenhuma'}</p>
+                    </div>
+                </div>`;
         });
     }
 
-    function excluirMembro(id) {
-        if(confirm("Tem certeza que deseja remover permanentemente este membro da Liga?")) {
-            db.collection("membros").doc(id).delete().then(() => {
-                carregarMembrosAdmin();
-                carregarDadosFrequencia();
-            });
-        }
+    async function salvarAula() {
+        const tema = document.getElementById('aula-tema').value;
+        const inputs = document.querySelectorAll('.status-input');
+        let presentes = [], justificadas = [];
+        inputs.forEach(i => {
+            if(i.value === 'P') presentes.push(i.dataset.id);
+            if(i.value === 'J') justificadas.push(i.dataset.id);
+        });
+        await db.collection("aulas").add({ tema, presentes, justificadas, dataCadastro: new Date().toLocaleDateString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Salvo!"); carregarDadosFrequencia();
     }
 
-    // --- BIBLIOTECA (LINK) ---
-    async function salvarMaterial() {
-        const titulo = document.getElementById('mat-titulo').value;
-        let categoria = document.getElementById('mat-categoria').value;
-        const linkText = document.getElementById('mat-link').value;
-        
-        if(!titulo || !categoria || !linkText) return alert("Preencha todos os campos do material!");
-        
-        categoria = categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
+    async function salvarAta() {
+        const titulo = document.getElementById('ata-titulo').value;
+        const url = document.getElementById('ata-link').value;
+        await db.collection("atas").add({ titulo, url, data: new Date().toLocaleDateString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        carregarAtas();
+    }
 
-        const btn = document.querySelector('#biblioteca .btn-action');
-        btn.innerText = "Publicando...";
-        btn.disabled = true;
+    function carregarAtas() {
+        db.collection("atas").orderBy("timestamp", "desc").get().then(snap => {
+            document.getElementById('atas-list').innerHTML = snap.docs.map(doc => `<div class="material-item"><span>${doc.data().data} - ${doc.data().titulo}</span><a href="${doc.data().url}" target="_blank" class="btn-gold">Ver</a></div>`).join('');
+        });
+    }
 
-        try {
-            let dadosMat = {
-                titulo: titulo,
-                categoria: categoria,
-                url: linkText,
-                isLink: linkText.startsWith('http'), 
-                dataCadastro: new Date().toLocaleDateString(),
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            await db.collection("materiais").add(dadosMat);
-            alert("Material adicionado à biblioteca com sucesso!");
-            
-            document.getElementById('mat-titulo').value = '';
-            document.getElementById('mat-link').value = '';
-            
-            carregarBiblioteca();
-
-        } catch(e) {
-            alert("Erro ao salvar o material: " + e.message);
-        } finally {
-            btn.innerText = "Publicar Material";
-            btn.disabled = false;
-        }
+    async function salvarBib() {
+        const titulo = document.getElementById('bib-titulo').value;
+        const categoria = document.getElementById('bib-cat').value;
+        const url = document.getElementById('bib-link').value;
+        await db.collection("biblioteca").add({ titulo, categoria, url, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        carregarBiblioteca();
     }
 
     function carregarBiblioteca() {
-        const acervo = document.getElementById('acervo-biblioteca');
-        acervo.innerHTML = '<p>Carregando acervo...</p>';
-
-        db.collection("materiais").orderBy("timestamp", "desc").get().then((snap) => {
-            if(snap.empty) {
-                acervo.innerHTML = '<p>Nenhum material foi adicionado à biblioteca ainda.</p>';
-                return;
-            }
-
-            const categoriasObj = {};
+        db.collection("biblioteca").get().then(snap => {
+            const groups = {};
             snap.forEach(doc => {
-                const m = doc.data();
-                if(!categoriasObj[m.categoria]) categoriasObj[m.categoria] = [];
-                categoriasObj[m.categoria].push({ id: doc.id, ...m });
+                const b = doc.data();
+                if(!groups[b.categoria]) groups[b.categoria] = [];
+                groups[b.categoria].push(b);
             });
-
-            acervo.innerHTML = '';
-            
-            for (const cat in categoriasObj) {
-                let htmlBloco = `<div class="category-block">
-                                    <h3>📚 ${cat}</h3>`;
-                
-                categoriasObj[cat].forEach(mat => {
-                    let btnExcluir = auth.currentUser ? `<button class="btn-danger" style="margin-left: 15px;" onclick="excluirMaterial('${mat.id}')">Excluir</button>` : '';
-                    
-                    let linkOuTexto = '';
-                    if(mat.isLink) {
-                        linkOuTexto = `<a href="${mat.url}" target="_blank">🔗 ${mat.titulo}</a>`;
-                    } else {
-                        linkOuTexto = `<span><strong>${mat.titulo}</strong>: ${mat.url}</span>`;
-                    }
-
-                    htmlBloco += `
-                        <div class="material-item">
-                            <div style="display: flex; flex-direction: column;">
-                                ${linkOuTexto}
-                                <span style="font-size:0.75rem; color:#718096; margin-top: 4px;">Adicionado em: ${mat.dataCadastro}</span> 
-                            </div>
-                            ${btnExcluir}
-                        </div>
-                    `;
-                });
-
-                htmlBloco += `</div>`;
-                acervo.innerHTML += htmlBloco;
-            }
+            document.getElementById('bib-list').innerHTML = Object.keys(groups).map(cat => `<div class="category-block"><h3>📁 ${cat}</h3>` + groups[cat].map(i => `<div class="material-item"><a href="${i.url}" target="_blank">${i.titulo}</a></div>`).join('') + `</div>`).join('');
         });
     }
 
-    function excluirMaterial(id) {
-        if(confirm("Deseja apagar este material da biblioteca?")) {
-            db.collection("materiais").doc(id).delete().then(() => {
-                carregarBiblioteca();
-            });
-        }
+    async function cadastrarMembro() {
+        const nome = document.getElementById('m-nome').value;
+        const matricula = document.getElementById('m-mat').value;
+        await db.collection("membros").add({ nome, matricula });
+        carregarMembros();
     }
 
-    // Inicia a aplicação na aba de Frequência
-    window.onload = () => { showSection('frequencia'); }
+    function carregarMembros() {
+        db.collection("membros").orderBy("nome").get().then(snap => {
+            document.getElementById('tbody-membros-list').innerHTML = snap.docs.map(doc => `<tr><td>${doc.data().nome}</td><td>${doc.data().matricula}</td><td><button class="btn-danger" onclick="excluirMembro('${doc.id}')">Excluir</button></td></tr>`).join('');
+        });
+    }
 
+    async function excluirMembro(id) { if(confirm("Excluir?")) { await db.collection("membros").doc(id).delete(); carregarMembros(); } }
+
+    window.onload = () => showSlide('freq');
 </script>
-
 </body>
 </html>

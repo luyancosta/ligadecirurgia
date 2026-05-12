@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Liga de Cirurgia</title>
-    <!-- Bibliotecas do Firebase (Versão Compatível) -->
+    <!-- Bibliotecas do Firebase (Versão Compatível - Ideal para rodar direto no HTML) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -128,7 +128,6 @@
                 </div>
                 <div class="form-group">
                     <label>Categoria:</label>
-                    <!-- Permite escolher ou digitar uma nova -->
                     <input type="text" id="mat-categoria" list="categorias-list" placeholder="Ex: Atas, Artigos, Protocolos...">
                     <datalist id="categorias-list">
                         <option value="Atas">
@@ -165,7 +164,7 @@
     <section id="membros" class="section">
         <h2>Gestão de Membros</h2>
         
-        <div class="admin-only" style="display: block;"> <!-- Forçado block pois a aba toda é admin -->
+        <div class="admin-only" style="display: block;">
             <h3>Cadastrar Novo Membro</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <div class="form-group"><label>Nome:</label><input type="text" id="adm-nome"></div>
@@ -204,15 +203,14 @@
 
 <script>
     // --- CONFIGURAÇÃO FIREBASE ---
-    // COLOQUE SUAS CHAVES AQUI
     const firebaseConfig = {
-        apiKey: "SUA_API_KEY",
+        apiKey: "AIzaSyA2ef4mY9sm-cVPkAq0bwzBjsgmRLN2_jQ",
         authDomain: "portal-liga-de-cirurgia.firebaseapp.com",
         databaseURL: "https://portal-liga-de-cirurgia-default-rtdb.firebaseio.com",
         projectId: "portal-liga-de-cirurgia",
         storageBucket: "portal-liga-de-cirurgia.firebasestorage.app",
-        messagingSenderId: "SEU_SENDER_ID",
-        appId: "SEU_APP_ID"
+        messagingSenderId: "408679438531",
+        appId: "1:408679438531:web:46667abc7bcdd9b9d2ea76"
     };
 
     if (!firebase.apps.length) {
@@ -247,7 +245,6 @@
             btnLogin.style.background = 'var(--accent)';
             navMembros.style.display = 'inline-block';
             adminElements.forEach(el => {
-                // Se a seção for a de membros que por padrão é block dentro dela
                 if(el.closest('#membros') === null) el.style.display = 'block';
             });
         } else {
@@ -256,7 +253,6 @@
             btnLogin.style.background = 'var(--secondary)';
             navMembros.style.display = 'none';
             adminElements.forEach(el => el.style.display = 'none');
-            // Se tentar sair estando na aba de membros, joga pra frequencia
             if(document.getElementById('membros').classList.contains('active')) {
                 showSection('frequencia');
             }
@@ -271,7 +267,7 @@
             if(!email) return;
             const senha = prompt("Senha:");
             auth.signInWithEmailAndPassword(email, senha)
-                .catch(error => alert("Erro ao logar: " + error.message));
+                .catch(error => alert("Erro ao logar. Verifique se o e-mail e a senha estão corretos no Authentication do Firebase."));
         }
     }
 
@@ -284,20 +280,17 @@
         listaChamada.innerHTML = '';
 
         try {
-            // Busca o total de aulas realizadas
             const aulasSnap = await db.collection("aulas").get();
             const totalAulas = aulasSnap.size;
 
-            // Busca os membros
             const membrosSnap = await db.collection("membros").get();
             
-            tbody.innerHTML = ''; // Limpa tabela
+            tbody.innerHTML = ''; 
 
             membrosSnap.forEach((doc) => {
                 const m = doc.data();
                 const membroId = doc.id;
                 
-                // Calcula presenças deste membro
                 let presencas = 0;
                 aulasSnap.forEach(aulaDoc => {
                     const aula = aulaDoc.data();
@@ -308,7 +301,6 @@
 
                 const faltas = totalAulas - presencas;
 
-                // Tabela Pública
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${m.nome}</strong></td>
@@ -317,7 +309,6 @@
                     </tr>
                 `;
 
-                // Renderiza Checkboxes para a Nova Chamada (Admin)
                 listaChamada.innerHTML += `
                     <label style="font-weight: normal; cursor: pointer;">
                         <input type="checkbox" class="check-presenca" value="${membroId}"> 
@@ -332,7 +323,7 @@
 
         } catch(e) {
             console.error(e);
-            tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar dados.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar dados. Verifique as regras do Firestore.</td></tr>';
         }
     }
 
@@ -359,7 +350,7 @@
         }).then(() => {
             alert("Chamada salva com sucesso!");
             document.getElementById('tema-aula').value = '';
-            carregarDadosFrequencia(); // Atualiza a tela
+            carregarDadosFrequencia();
         }).catch(e => alert("Erro ao salvar: " + e.message));
     }
 
@@ -381,7 +372,6 @@
 
         db.collection("membros").add(dados).then(() => {
             alert("Membro cadastrado!");
-            // Limpa form
             document.getElementById('adm-nome').value = '';
             document.getElementById('adm-mat').value = '';
             document.getElementById('adm-cargo').value = '';
@@ -412,7 +402,7 @@
     }
 
     function excluirMembro(id) {
-        if(confirm("Tem certeza que deseja excluir este membro? O histórico de frequência dele continuará nas aulas, mas ele não aparecerá mais na tabela.")) {
+        if(confirm("Tem certeza que deseja excluir este membro?")) {
             db.collection("membros").doc(id).delete().then(() => {
                 carregarMembrosAdmin();
             });
@@ -438,7 +428,6 @@
         
         if(!titulo || !categoria) return alert("Título e Categoria são obrigatórios!");
         
-        // Padroniza a primeira letra da categoria em maiúscula
         categoria = categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
 
         const btn = document.querySelector('#biblioteca .btn-action');
@@ -464,7 +453,6 @@
                 const linkText = document.getElementById('mat-link').value;
                 if(!linkText) throw new Error("Digite o texto ou link!");
                 dadosMat.url = linkText;
-                // Simples verificação se é um link ou só um texto
                 dadosMat.isLink = linkText.startsWith('http'); 
                 dadosMat.textoCurto = true;
             }
@@ -472,7 +460,6 @@
             await db.collection("materiais").add(dadosMat);
             alert("Material publicado com sucesso!");
             
-            // Limpa form
             document.getElementById('mat-titulo').value = '';
             document.getElementById('mat-arquivo').value = '';
             document.getElementById('mat-link').value = '';
@@ -497,7 +484,6 @@
                 return;
             }
 
-            // Agrupa os materiais por categoria
             const categoriasObj = {};
             snap.forEach(doc => {
                 const m = doc.data();
@@ -507,7 +493,6 @@
 
             acervo.innerHTML = '';
             
-            // Renderiza os blocos por categoria
             for (const cat in categoriasObj) {
                 let htmlBloco = `<div class="category-block">
                                     <h3 style="border-bottom: 2px solid #cbd5e0; padding-bottom: 5px;">📁 ${cat}</h3>`;
@@ -519,7 +504,6 @@
                     if(!mat.textoCurto || mat.isLink) {
                         linkOuTexto = `<a href="${mat.url}" target="_blank">${mat.titulo}</a>`;
                     } else {
-                        // É um texto puro
                         linkOuTexto = `<span><strong>${mat.titulo}</strong>: ${mat.url}</span>`;
                     }
 

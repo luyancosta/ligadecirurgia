@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -25,7 +24,7 @@
             --text-main: #1a202c;
             --danger: #e53e3e;
             --success: #38a169;
-            --warning: #ed8936;
+            --warning: #d69e2e;
         }
 
         * { box-sizing: border-box; }
@@ -38,6 +37,7 @@
             color: var(--text-main);
         }
 
+        /* NAVEGAÇÃO */
         nav {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             color: var(--white);
@@ -56,7 +56,7 @@
         .brand { display: flex; align-items: center; gap: 15px; }
         .brand-text h1 { margin: 0; font-family: 'Merriweather', serif; font-size: 1.2rem; letter-spacing: 1px; }
 
-        .nav-links { display: flex; gap: 10px; }
+        .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
         .nav-links button {
             background: transparent;
             border: none;
@@ -69,9 +69,10 @@
             text-transform: uppercase;
             font-size: 0.85rem;
         }
-        .nav-links button:hover { color: var(--accent-light); }
+        .nav-links button:hover { color: var(--accent-light); background: rgba(255,255,255,0.1); }
         .nav-links button.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
 
+        /* LAYOUT PRINCIPAL */
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
         .slide-card {
@@ -101,41 +102,70 @@
             gap: 15px;
         }
 
+        /* PAINEL ADMIN */
         .admin-panel {
             background: #fdfaf4;
             border: 1px solid var(--accent);
             padding: 25px;
             border-radius: 8px;
             margin-bottom: 30px;
+            position: relative;
         }
+        
+        .admin-panel input, .admin-panel select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-family: inherit;
+            margin-bottom: 15px;
+        }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
+        /* TABELAS E BADGES */
         .table-wrapper { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: var(--primary); color: var(--white); padding: 12px; text-align: left; font-size: 0.85rem; }
-        td { padding: 12px; border-bottom: 1px solid #edf2f7; }
+        th { background: var(--primary); color: var(--white); padding: 15px; text-align: left; font-size: 0.9rem; }
+        td { padding: 15px; border-bottom: 1px solid #edf2f7; }
+        tr:hover { background: #f1f5f9; }
 
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;}
         .bg-presenca { background: #c6f6d5; color: #22543d; }
         .bg-falta { background: #fed7d7; color: #9b2c2c; }
         .bg-justificada { background: #bee3f8; color: #2b6cb0; }
+        .bg-gold { background: #fefcbf; color: #744210; }
 
+        /* BOTÕES */
         .btn-gold {
             background: var(--accent);
             color: var(--white);
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border-radius: 6px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
         }
         .btn-gold:hover { background: var(--primary-dark); }
+        
+        .btn-small { padding: 6px 12px; font-size: 0.8rem; margin-left: 5px;}
+        .btn-danger { background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: var(--warning); color: white; border: none; border-radius: 4px; cursor: pointer; }
 
+        /* ACORDEON DE DIAS */
         .day-item { border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; }
-        .day-header { background: #f8fafc; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 600; }
+        .day-header { background: #f8fafc; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .day-header:hover { background: #edf2f7; }
         .day-content { display: none; padding: 20px; border-top: 1px solid #e2e8f0; }
-
-        .view-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+        
+        /* BLOCOS DE MATERIAIS / ATAS */
+        .material-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e2e8f0; }
+        .category-block { margin-bottom: 30px; }
+        .category-block h3 { color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        
+        /* Modal de Edição (Estilo Inline) */
+        .edit-mode-bg { background-color: #fffaf0 !important; border-color: var(--warning) !important;}
     </style>
 </head>
 <body>
@@ -151,6 +181,7 @@
         <button id="nav-freq" class="active" onclick="showSlide('freq')">Frequência</button>
         <button id="nav-atas" onclick="showSlide('atas')">Atas</button>
         <button id="nav-bib" onclick="showSlide('bib')">Biblioteca</button>
+        <button id="nav-plantoes" onclick="showSlide('plantoes')">Plantões</button>
         <button id="nav-adm" style="display:none;" onclick="showSlide('adm')">Membros</button>
         <button id="btn-login-main" onclick="toggleLogin()" style="background: var(--accent); color: white;">Login Sec.</button>
     </div>
@@ -158,28 +189,32 @@
 
 <div class="container">
     
-    <!-- FREQUENCIA -->
     <section id="slide-freq" class="slide-card active">
         <h2 class="section-header"><i class="fa-solid fa-calendar-check"></i> Frequência</h2>
         
-        <div class="admin-panel admin-only" style="display:none;">
-            <h3>Nova Chamada</h3>
-            <input type="text" id="aula-tema" placeholder="Tema da Aula" style="width:100%; padding:10px; margin-bottom:15px;">
+        <div id="panel-chamada" class="admin-panel admin-only" style="display:none;">
+            <h3 id="titulo-painel-chamada">Nova Chamada</h3>
+            <input type="text" id="aula-tema" placeholder="Tema da Reunião / Aula">
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>Membro</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Membro</th><th>Status da Presença</th></tr></thead>
                     <tbody id="tbody-chamada-input"></tbody>
                 </table>
             </div>
-            <button class="btn-gold" style="margin-top:15px;" onclick="salvarAula()">Salvar Chamada</button>
+            <button id="btn-salvar-chamada" class="btn-gold" style="margin-top:15px;" onclick="salvarAula()">Finalizar e Salvar Chamada</button>
+            <button id="btn-cancelar-edicao" class="btn-gold" style="margin-top:15px; display:none; background: #a0aec0;" onclick="cancelarEdicaoAula()">Cancelar Edição</button>
         </div>
 
-        <div class="view-toggle">
-            <button class="btn-gold" onclick="switchFreqView('ranking')">Ranking de Faltas</button>
-            <button class="btn-gold" onclick="switchFreqView('dias')">Histórico por Dias</button>
+        <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+            <button class="btn-gold" onclick="switchFreqView('dias')">Ver Histórico por Dias</button>
+            <button class="btn-gold" onclick="switchFreqView('ranking')">Ver Ranking de Presença</button>
         </div>
 
-        <div id="freq-view-ranking">
+        <div id="freq-view-dias">
+            <div id="lista-dias-container"></div>
+        </div>
+
+        <div id="freq-view-ranking" style="display:none;">
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -194,49 +229,85 @@
                 </table>
             </div>
         </div>
-
-        <div id="freq-view-dias" style="display:none;">
-            <div id="lista-dias-container"></div>
-        </div>
     </section>
 
-    <!-- ATAS -->
     <section id="slide-atas" class="slide-card">
         <h2 class="section-header"><i class="fa-solid fa-file-lines"></i> Atas de Reunião</h2>
+        
         <div class="admin-panel admin-only" style="display:none;">
-            <h3>Publicar Ata</h3>
-            <input type="text" id="ata-titulo" placeholder="Título da Ata" style="width:100%; padding:10px; margin-bottom:10px;">
-            <input type="text" id="ata-link" placeholder="Link do Arquivo (Drive)" style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="btn-gold" onclick="salvarAta()">Adicionar</button>
+            <h3>Publicar Nova Ata</h3>
+            <div class="grid-2">
+                <input type="text" id="ata-titulo" placeholder="Título da Ata (Ex: Reunião Administrativa)">
+                <input type="date" id="ata-data" title="Data da Reunião">
+            </div>
+            <input type="text" id="ata-link" placeholder="Link do Arquivo (Google Drive)">
+            <button class="btn-gold" onclick="salvarAta()">Adicionar Ata</button>
         </div>
+        
         <div id="atas-list"></div>
     </section>
 
-    <!-- BIBLIOTECA -->
     <section id="slide-bib" class="slide-card">
-        <h2 class="section-header"><i class="fa-solid fa-book"></i> Biblioteca</h2>
+        <h2 class="section-header"><i class="fa-solid fa-book-medical"></i> Biblioteca Digital</h2>
+        
         <div class="admin-panel admin-only" style="display:none;">
             <h3>Novo Material</h3>
-            <input type="text" id="bib-titulo" placeholder="Título" style="width:100%; padding:10px; margin-bottom:10px;">
-            <input type="text" id="bib-cat" placeholder="Categoria" style="width:100%; padding:10px; margin-bottom:10px;">
-            <input type="text" id="bib-link" placeholder="Link" style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="btn-gold" onclick="salvarBib()">Salvar</button>
+            <div class="grid-2">
+                <input type="text" id="bib-titulo" placeholder="Título do Material">
+                <input type="text" id="bib-cat" list="cats-bib" placeholder="Selecione ou digite a Categoria">
+                <datalist id="cats-bib">
+                    <option value="Protocolos">
+                    <option value="Artigos">
+                    <option value="VideoAulas">
+                </datalist>
+            </div>
+            <input type="text" id="bib-link" placeholder="Link (Drive/YouTube)">
+            <button class="btn-gold" onclick="salvarBib()">Salvar na Biblioteca</button>
         </div>
+        
         <div id="bib-list"></div>
     </section>
 
-    <!-- MEMBROS (ADMIN) -->
+    <section id="slide-plantoes" class="slide-card">
+        <h2 class="section-header"><i class="fa-solid fa-user-doctor"></i> Escala de Plantões</h2>
+        
+        <div class="admin-panel admin-only" style="display:none;">
+            <h3>Registrar Plantão Mensal</h3>
+            <div class="grid-2">
+                <select id="p-membro">
+                    <option value="">Selecione o Membro...</option>
+                </select>
+                <input type="month" id="p-mes" title="Mês de Referência">
+            </div>
+            <input type="number" id="p-qtd" placeholder="Quantidade de Plantões dados no Mês">
+            <button class="btn-gold" onclick="salvarPlantao()">Registrar Plantões</button>
+        </div>
+        
+        <div id="plantoes-list"></div>
+    </section>
+
     <section id="slide-adm" class="slide-card">
         <h2 class="section-header"><i class="fa-solid fa-users"></i> Gestão de Membros</h2>
+        
         <div class="admin-panel">
-            <h3>Cadastrar Membro</h3>
-            <input type="text" id="m-nome" placeholder="Nome" style="width:100%; padding:10px; margin-bottom:10px;">
-            <input type="text" id="m-mat" placeholder="Matrícula" style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="btn-gold" onclick="cadastrarMembro()">Cadastrar</button>
+            <h3>Cadastrar Novo Membro</h3>
+            <div class="grid-2">
+                <input type="text" id="m-nome" placeholder="Nome Completo">
+                <input type="text" id="m-mat" placeholder="Matrícula">
+                <input type="text" id="m-sem" placeholder="Semestre Atual (Ex: 4º Semestre)">
+                <select id="m-mod">
+                    <option value="Estágio + Liga">Estágio + Liga</option>
+                    <option value="Só Liga">Só Liga</option>
+                </select>
+            </div>
+            <button class="btn-gold" onclick="cadastrarMembro()">Cadastrar Membro</button>
         </div>
+        
         <div class="table-wrapper">
             <table>
-                <thead><tr><th>Nome</th><th>Matrícula</th><th>Ação</th></tr></thead>
+                <thead>
+                    <tr><th>Nome</th><th>Matrícula</th><th>Semestre</th><th>Modalidade</th><th>Ações</th></tr>
+                </thead>
                 <tbody id="tbody-membros-list"></tbody>
             </table>
         </div>
@@ -245,30 +316,36 @@
 </div>
 
 <script>
+    // --- CONFIGURAÇÃO FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyA2ef4mY9sm-cVPkAq0bwzBjsgmRLN2_jQ",
         authDomain: "portal-liga-de-cirurgia.firebaseapp.com",
         databaseURL: "https://portal-liga-de-cirurgia-default-rtdb.firebaseio.com",
         projectId: "portal-liga-de-cirurgia",
-        storageBucket: "portal-liga-de-cirurgia.firebasestorage.app",
         messagingSenderId: "408679438531",
         appId: "1:408679438531:web:46667abc7bcdd9b9d2ea76"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    let idAulaEditando = null; // Variável global para saber se estamos editando uma aula
+
+    // --- CONTROLE DE TELAS ---
     function showSlide(id) {
         document.querySelectorAll('.slide-card').forEach(s => s.classList.remove('active'));
         document.getElementById('slide-' + id).classList.add('active');
         document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-        document.getElementById('nav-' + (id==='freq'?'freq':id==='atas'?'atas':id==='bib'?'bib':'adm')).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
         
         if(id === 'freq') carregarDadosFrequencia();
         if(id === 'atas') carregarAtas();
         if(id === 'bib') carregarBiblioteca();
-        if(id === 'adm') carregarMembros();
+        if(id === 'plantoes') carregarPlantoes();
+        if(id === 'adm') carregarMembrosAdmin();
     }
 
     function switchFreqView(view) {
@@ -276,30 +353,37 @@
         document.getElementById('freq-view-dias').style.display = view === 'dias' ? 'block' : 'none';
     }
 
+    // --- LOGIN ---
     auth.onAuthStateChanged(user => {
         const btn = document.getElementById('btn-login-main');
         const adminElements = document.querySelectorAll('.admin-only');
         const navAdm = document.getElementById('nav-adm');
+        
         if(user) {
-            btn.innerText = "Sair";
+            btn.innerText = "Sair do Sistema";
             navAdm.style.display = "block";
             adminElements.forEach(el => el.style.display = "block");
+            carregarDadosFrequencia(); // Recarrega para mostrar botões de edição
         } else {
             btn.innerText = "Login Sec.";
             navAdm.style.display = "none";
             adminElements.forEach(el => el.style.display = "none");
+            carregarDadosFrequencia(); // Recarrega para esconder botões
         }
     });
 
     function toggleLogin() {
-        if(auth.currentUser) auth.signOut();
-        else {
-            const email = prompt("E-mail:");
+        if(auth.currentUser) {
+            auth.signOut().then(() => alert("Deslogado com sucesso."));
+        } else {
+            const email = prompt("E-mail da Secretaria:");
+            if(!email) return;
             const pass = prompt("Senha:");
-            if(email && pass) auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+            if(pass) auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Erro ao logar: " + e.message));
         }
     }
 
+    // --- LÓGICA DE FREQUÊNCIA ---
     async function carregarDadosFrequencia() {
         const rankingBody = document.getElementById('tbody-ranking');
         const diasContainer = document.getElementById('lista-dias-container');
@@ -308,40 +392,84 @@
         const membrosSnap = await db.collection("membros").orderBy("nome").get();
         const aulasSnap = await db.collection("aulas").orderBy("timestamp", "desc").get();
 
+        // 1. Renderiza formulário de chamada
         inputChamada.innerHTML = '';
         membrosSnap.forEach(doc => {
-            inputChamada.innerHTML += `<tr><td>${doc.data().nome}</td><td>
-                <select class="status-input" data-id="${doc.id}">
-                    <option value="P">Presente</option><option value="F">Falta</option><option value="J">Justificada</option>
-                </select>
-            </td></tr>`;
+            inputChamada.innerHTML += `
+                <tr>
+                    <td>${doc.data().nome}</td>
+                    <td>
+                        <select class="status-input" data-id="${doc.id}">
+                            <option value="P">Presente</option>
+                            <option value="F">Falta Não Justificada</option>
+                            <option value="J">Falta Justificada</option>
+                        </select>
+                    </td>
+                </tr>`;
         });
 
+        // 2. Renderiza Ranking
         let ranking = [];
         membrosSnap.forEach(doc => {
             let p=0, j=0, f=0;
             aulasSnap.forEach(aDoc => {
                 const a = aDoc.data();
-                if(a.presentes?.includes(doc.id)) p++;
-                else if(a.justificadas?.includes(doc.id)) j++;
+                if(a.presentes && a.presentes.includes(doc.id)) p++;
+                else if(a.justificadas && a.justificadas.includes(doc.id)) j++;
                 else f++;
             });
             ranking.push({nome: doc.data().nome, p, j, f});
         });
-        ranking.sort((a,b) => b.f - a.f);
-        rankingBody.innerHTML = ranking.map(r => `<tr><td>${r.nome}</td><td><span class="badge bg-presenca">${r.p}</span></td><td><span class="badge bg-justificada">${r.j}</span></td><td><span class="badge bg-falta">${r.f}</span></td></tr>`).join('');
+        
+        ranking.sort((a,b) => b.f - a.f); 
+        
+        rankingBody.innerHTML = ranking.map(r => `
+            <tr>
+                <td><strong>${r.nome}</strong></td>
+                <td><span class="badge bg-presenca">${r.p}</span></td>
+                <td><span class="badge bg-justificada">${r.j}</span></td>
+                <td><span class="badge bg-falta">${r.f}</span></td>
+            </tr>`).join('');
 
+        // 3. Renderiza Histórico por Dias
         diasContainer.innerHTML = '';
         aulasSnap.forEach(doc => {
             const a = doc.data();
+            const aulaId = doc.id;
+            
+            const presNomes = membrosSnap.docs.filter(m => a.presentes && a.presentes.includes(m.id)).map(m => m.data().nome).join(', ');
+            const justNomes = membrosSnap.docs.filter(m => a.justificadas && a.justificadas.includes(m.id)).map(m => m.data().nome).join(', ');
+            const faltNomes = membrosSnap.docs.filter(m => (!a.presentes || !a.presentes.includes(m.id)) && (!a.justificadas || !a.justificadas.includes(m.id))).map(m => m.data().nome).join(', ');
+
+            // Botões de Admin para Aulas
+            let botoesAdmin = '';
+            if(auth.currentUser) {
+                botoesAdmin = `
+                    <div>
+                        <button class="btn-edit btn-small" onclick="iniciarEdicaoAula('${aulaId}', '${a.tema}')"><i class="fa-solid fa-pen"></i> Editar</button>
+                        <button class="btn-danger btn-small" onclick="excluirAula('${aulaId}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+            }
+
+            // String das arrays para facilitar a edição
+            const strPresentes = JSON.stringify(a.presentes || []);
+            const strJustificadas = JSON.stringify(a.justificadas || []);
+
             diasContainer.innerHTML += `
-                <div class="day-item">
+                <div class="day-item" id="aula-item-${aulaId}" data-pres='${strPresentes}' data-just='${strJustificadas}'>
                     <div class="day-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
-                        <span>📅 ${a.dataCadastro} - ${a.tema}</span><i class="fa-solid fa-chevron-down"></i>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span>📅 ${a.dataCadastro} - <strong>${a.tema}</strong></span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            ${botoesAdmin}
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
                     </div>
                     <div class="day-content">
-                        <p><strong>Presentes:</strong> ${membrosSnap.docs.filter(m => a.presentes?.includes(m.id)).map(m => m.data().nome).join(', ') || 'Nenhum'}</p>
-                        <p><strong>Faltas:</strong> ${membrosSnap.docs.filter(m => !a.presentes?.includes(m.id) && !a.justificadas?.includes(m.id)).map(m => m.data().nome).join(', ') || 'Nenhuma'}</p>
+                        <p style="color:var(--success)"><strong>Presentes:</strong> ${presNomes || 'Nenhum'}</p>
+                        <p style="color:var(--warning)"><strong>Faltas Justificadas:</strong> ${justNomes || 'Nenhuma'}</p>
+                        <p style="color:var(--danger)"><strong>Faltas Não Justificadas:</strong> ${faltNomes || 'Nenhuma'}</p>
                     </div>
                 </div>`;
         });
@@ -349,64 +477,346 @@
 
     async function salvarAula() {
         const tema = document.getElementById('aula-tema').value;
+        if(!tema) return alert("Digite o tema da aula!");
+
         const inputs = document.querySelectorAll('.status-input');
         let presentes = [], justificadas = [];
+        
         inputs.forEach(i => {
             if(i.value === 'P') presentes.push(i.dataset.id);
             if(i.value === 'J') justificadas.push(i.dataset.id);
         });
-        await db.collection("aulas").add({ tema, presentes, justificadas, dataCadastro: new Date().toLocaleDateString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Salvo!"); carregarDadosFrequencia();
+
+        const dadosAula = {
+            tema, presentes, justificadas, 
+            dataCadastro: new Date().toLocaleDateString(), 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+        };
+
+        if(idAulaEditando) {
+            // Atualizar aula existente
+            await db.collection("aulas").doc(idAulaEditando).update({
+                tema, presentes, justificadas
+            });
+            alert("Chamada atualizada com sucesso!");
+            cancelarEdicaoAula();
+        } else {
+            // Criar nova aula
+            await db.collection("aulas").add(dadosAula);
+            alert("Chamada salva com sucesso!"); 
+            document.getElementById('aula-tema').value = '';
+        }
+        
+        carregarDadosFrequencia();
     }
 
+    function iniciarEdicaoAula(id, temaAtual) {
+        idAulaEditando = id;
+        
+        // Pega as arrays escondidas no HTML
+        const divAula = document.getElementById(`aula-item-${id}`);
+        const presentes = JSON.parse(divAula.getAttribute('data-pres'));
+        const justificadas = JSON.parse(divAula.getAttribute('data-just'));
+
+        // Preenche o painel
+        const painel = document.getElementById('panel-chamada');
+        painel.classList.add('edit-mode-bg');
+        document.getElementById('titulo-painel-chamada').innerText = "✏️ Editando Chamada";
+        document.getElementById('aula-tema').value = temaAtual;
+        document.getElementById('btn-salvar-chamada').innerText = "Salvar Alterações";
+        document.getElementById('btn-cancelar-edicao').style.display = "inline-block";
+
+        // Ajusta as caixinhas P, F, J de cada membro
+        const inputs = document.querySelectorAll('.status-input');
+        inputs.forEach(i => {
+            const mId = i.dataset.id;
+            if(presentes.includes(mId)) i.value = 'P';
+            else if(justificadas.includes(mId)) i.value = 'J';
+            else i.value = 'F';
+        });
+
+        // Sobe a tela para o topo
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoAula() {
+        idAulaEditando = null;
+        const painel = document.getElementById('panel-chamada');
+        painel.classList.remove('edit-mode-bg');
+        document.getElementById('titulo-painel-chamada').innerText = "Nova Chamada";
+        document.getElementById('aula-tema').value = "";
+        document.getElementById('btn-salvar-chamada').innerText = "Finalizar e Salvar Chamada";
+        document.getElementById('btn-cancelar-edicao').style.display = "none";
+        
+        // Reseta todos para Presente (Padrão)
+        const inputs = document.querySelectorAll('.status-input');
+        inputs.forEach(i => i.value = 'P');
+    }
+
+    async function excluirAula(id) {
+        if(confirm("ATENÇÃO: Deseja realmente excluir permanentemente a chamada desta aula? As faltas e presenças vinculadas a ela serão apagadas.")) {
+            await db.collection("aulas").doc(id).delete();
+            carregarDadosFrequencia();
+        }
+    }
+
+    // --- ATAS ---
     async function salvarAta() {
         const titulo = document.getElementById('ata-titulo').value;
+        const dataInput = document.getElementById('ata-data').value;
         const url = document.getElementById('ata-link').value;
-        await db.collection("atas").add({ titulo, url, data: new Date().toLocaleDateString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        
+        if(!titulo || !url || !dataInput) return alert("Preencha o título, a DATA e o link da Ata.");
+        
+        // Formatar a data (YYYY-MM-DD para DD/MM/YYYY)
+        const dataFormatada = dataInput.split('-').reverse().join('/');
+
+        await db.collection("atas").add({ 
+            titulo, url, 
+            data: dataFormatada, 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+        });
+        
+        alert("Ata publicada!");
+        document.getElementById('ata-titulo').value = '';
+        document.getElementById('ata-data').value = '';
+        document.getElementById('ata-link').value = '';
         carregarAtas();
     }
 
     function carregarAtas() {
         db.collection("atas").orderBy("timestamp", "desc").get().then(snap => {
-            document.getElementById('atas-list').innerHTML = snap.docs.map(doc => `<div class="material-item"><span>${doc.data().data} - ${doc.data().titulo}</span><a href="${doc.data().url}" target="_blank" class="btn-gold">Ver</a></div>`).join('');
+            document.getElementById('atas-list').innerHTML = snap.docs.map(doc => {
+                const btnExcluir = auth.currentUser ? `<button class="btn-danger btn-small" onclick="excluirAta('${doc.id}')">Excluir</button>` : '';
+                return `
+                <div class="material-item">
+                    <span><strong>${doc.data().data}</strong> - ${doc.data().titulo}</span>
+                    <div>
+                        <a href="${doc.data().url}" target="_blank" class="btn-gold" style="text-decoration:none; padding:8px 15px; display:inline-block;">Acessar PDF</a>
+                        ${btnExcluir}
+                    </div>
+                </div>`;
+            }).join('');
         });
     }
 
+    async function excluirAta(id) {
+        if(confirm("Excluir esta ata?")) {
+            await db.collection("atas").doc(id).delete();
+            carregarAtas();
+        }
+    }
+
+    // --- BIBLIOTECA ---
     async function salvarBib() {
         const titulo = document.getElementById('bib-titulo').value;
         const categoria = document.getElementById('bib-cat').value;
         const url = document.getElementById('bib-link').value;
-        await db.collection("biblioteca").add({ titulo, categoria, url, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        
+        if(!titulo || !categoria || !url) return alert("Preencha todos os campos.");
+
+        await db.collection("biblioteca").add({ 
+            titulo, 
+            categoria: categoria.charAt(0).toUpperCase() + categoria.slice(1), 
+            url, 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+        });
+        alert("Material salvo!");
+        document.getElementById('bib-titulo').value = '';
+        document.getElementById('bib-cat').value = '';
+        document.getElementById('bib-link').value = '';
         carregarBiblioteca();
     }
 
     function carregarBiblioteca() {
-        db.collection("biblioteca").get().then(snap => {
+        db.collection("biblioteca").orderBy("timestamp", "desc").get().then(snap => {
             const groups = {};
             snap.forEach(doc => {
                 const b = doc.data();
                 if(!groups[b.categoria]) groups[b.categoria] = [];
-                groups[b.categoria].push(b);
+                groups[b.categoria].push({id: doc.id, ...b});
             });
-            document.getElementById('bib-list').innerHTML = Object.keys(groups).map(cat => `<div class="category-block"><h3>📁 ${cat}</h3>` + groups[cat].map(i => `<div class="material-item"><a href="${i.url}" target="_blank">${i.titulo}</a></div>`).join('') + `</div>`).join('');
+            
+            document.getElementById('bib-list').innerHTML = Object.keys(groups).map(cat => `
+                <div class="category-block">
+                    <h3>📁 ${cat}</h3>` + 
+                    groups[cat].map(i => {
+                        const btnExcluir = auth.currentUser ? `<button class="btn-danger btn-small" onclick="excluirBib('${i.id}')">Excluir</button>` : '';
+                        return `
+                        <div class="material-item">
+                            <span>${i.titulo}</span>
+                            <div>
+                                <a href="${i.url}" target="_blank" class="btn-gold" style="text-decoration:none; padding:8px 15px; display:inline-block;">Acessar</a>
+                                ${btnExcluir}
+                            </div>
+                        </div>`;
+                    }).join('') + 
+                `</div>`).join('');
         });
     }
 
+    async function excluirBib(id) {
+        if(confirm("Excluir material?")) {
+            await db.collection("biblioteca").doc(id).delete();
+            carregarBiblioteca();
+        }
+    }
+
+    // --- PLANTÕES (NOVA ABA) ---
+    async function salvarPlantao() {
+        const mSelect = document.getElementById('p-membro');
+        const mId = mSelect.value;
+        const mNome = mSelect.options[mSelect.selectedIndex].text;
+        const mesInput = document.getElementById('p-mes').value; // Retorna YYYY-MM
+        const qtd = document.getElementById('p-qtd').value;
+
+        if(!mId || !mesInput || !qtd) return alert("Preencha o Membro, o Mês e a Quantidade.");
+
+        // Transforma '2026-05' em 'Maio 2026'
+        const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const partesData = mesInput.split('-');
+        const nomeMes = mesesNomes[parseInt(partesData[1]) - 1] + " " + partesData[0];
+
+        await db.collection("plantoes").add({
+            membroId: mId,
+            membroNome: mNome,
+            mesReferencia: mesInput, // YYYY-MM para ordenar no banco
+            mesExibicao: nomeMes,
+            quantidade: parseInt(qtd),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert("Plantões registrados com sucesso!");
+        document.getElementById('p-membro').value = '';
+        document.getElementById('p-qtd').value = '';
+        carregarPlantoes();
+    }
+
+    function carregarPlantoes() {
+        // Preenche o Select de Membros
+        const mSelect = document.getElementById('p-membro');
+        db.collection("membros").orderBy("nome").get().then(snap => {
+            mSelect.innerHTML = '<option value="">Selecione o Membro...</option>';
+            snap.forEach(doc => {
+                mSelect.innerHTML += `<option value="${doc.id}">${doc.data().nome}</option>`;
+            });
+        });
+
+        // Traz os plantões do banco, ordenados pelo mês mais recente
+        db.collection("plantoes").orderBy("mesReferencia", "desc").get().then(snap => {
+            const listContainer = document.getElementById('plantoes-list');
+            if(snap.empty) {
+                listContainer.innerHTML = '<p>Nenhum plantão registrado ainda.</p>';
+                return;
+            }
+
+            const plantoesPorMes = {};
+            snap.forEach(doc => {
+                const p = doc.data();
+                if(!plantoesPorMes[p.mesExibicao]) plantoesPorMes[p.mesExibicao] = [];
+                plantoesPorMes[p.mesExibicao].push({id: doc.id, ...p});
+            });
+
+            listContainer.innerHTML = '';
+            for(let mes in plantoesPorMes) {
+                let htmlMes = `
+                <div class="category-block">
+                    <h3>🏥 Plantões - ${mes}</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Membro</th><th>Plantões Realizados</th><th>Ações</th></tr></thead>
+                            <tbody>
+                `;
+                
+                plantoesPorMes[mes].forEach(p => {
+                    const btnExcluir = auth.currentUser ? `<button class="btn-danger btn-small" onclick="excluirPlantao('${p.id}')">Excluir</button>` : '';
+                    htmlMes += `
+                        <tr>
+                            <td><strong>${p.membroNome}</strong></td>
+                            <td><span class="badge bg-presenca" style="font-size: 0.9rem;">${p.quantidade}</span></td>
+                            <td>${btnExcluir}</td>
+                        </tr>
+                    `;
+                });
+
+                htmlMes += `</tbody></table></div></div>`;
+                listContainer.innerHTML += htmlMes;
+            }
+        });
+    }
+
+    async function excluirPlantao(id) {
+        if(confirm("Excluir este registro de plantões?")) {
+            await db.collection("plantoes").doc(id).delete();
+            carregarPlantoes();
+        }
+    }
+
+    // --- GESTÃO DE MEMBROS ---
     async function cadastrarMembro() {
         const nome = document.getElementById('m-nome').value;
         const matricula = document.getElementById('m-mat').value;
-        await db.collection("membros").add({ nome, matricula });
-        carregarMembros();
+        const semestre = document.getElementById('m-sem').value;
+        const modalidade = document.getElementById('m-mod').value;
+        
+        if(!nome || !matricula) return alert("Preencha no mínimo Nome e Matrícula.");
+        
+        await db.collection("membros").add({ nome, matricula, semestre: semestre || "N/A", modalidade });
+        alert("Membro Cadastrado!");
+        
+        document.getElementById('m-nome').value = '';
+        document.getElementById('m-mat').value = '';
+        document.getElementById('m-sem').value = '';
+        
+        carregarMembrosAdmin();
     }
 
-    function carregarMembros() {
+    function carregarMembrosAdmin() {
         db.collection("membros").orderBy("nome").get().then(snap => {
-            document.getElementById('tbody-membros-list').innerHTML = snap.docs.map(doc => `<tr><td>${doc.data().nome}</td><td>${doc.data().matricula}</td><td><button class="btn-danger" onclick="excluirMembro('${doc.id}')">Excluir</button></td></tr>`).join('');
+            document.getElementById('tbody-membros-list').innerHTML = snap.docs.map(doc => `
+                <tr>
+                    <td>${doc.data().nome}</td>
+                    <td>${doc.data().matricula}</td>
+                    <td>${doc.data().semestre || 'N/A'}</td>
+                    <td><span class="badge ${doc.data().modalidade === 'Só Liga' ? 'bg-gold' : 'bg-presenca'}">${doc.data().modalidade}</span></td>
+                    <td>
+                        <button class="btn-edit btn-small" onclick="editarDadosMembro('${doc.id}', '${doc.data().semestre}', '${doc.data().modalidade}')"><i class="fa-solid fa-pen"></i> Editar</button>
+                        <button class="btn-danger btn-small" onclick="excluirMembro('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`).join('');
         });
     }
 
-    async function excluirMembro(id) { if(confirm("Excluir?")) { await db.collection("membros").doc(id).delete(); carregarMembros(); } }
+    async function editarDadosMembro(id, semAtual, modAtual) {
+        const novoSemestre = prompt("Atualizar Semestre (Ex: 5º Semestre):", semAtual !== 'undefined' ? semAtual : '');
+        if(novoSemestre === null) return; // Cancelou
+        
+        const mudarMod = confirm(`A modalidade atual é [${modAtual}].\nDeseja alterar a modalidade?\n\nOK = Sim, alterar.\nCancelar = Manter a mesma.`);
+        let novaModalidade = modAtual;
+        
+        if(mudarMod) {
+            if(modAtual === "Só Liga") novaModalidade = "Estágio + Liga";
+            else novaModalidade = "Só Liga";
+            alert("A modalidade será alterada para: " + novaModalidade);
+        }
 
+        await db.collection("membros").doc(id).update({
+            semestre: novoSemestre,
+            modalidade: novaModalidade
+        });
+
+        alert("Dados do membro atualizados!");
+        carregarMembrosAdmin();
+    }
+
+    async function excluirMembro(id) { 
+        if(confirm("Deseja realmente excluir este membro do banco de dados?")) { 
+            await db.collection("membros").doc(id).delete(); 
+            carregarMembrosAdmin(); 
+        } 
+    }
+
+    // Inicia a aplicação
     window.onload = () => showSlide('freq');
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Liga de Cirurgia - Secretaria</title>
+    <title>Portal Liga de Cirurgia</title>
     <!-- Bibliotecas do Firebase (Versão Compatível) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -21,8 +21,10 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--light); color: var(--secondary); }
         
         /* Sidebar/Menu */
-        nav { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
-        .menu-links button { background: none; border: none; color: white; cursor: pointer; margin: 0 10px; font-weight: bold; }
+        nav { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;}
+        .menu-links button { background: none; border: none; color: white; cursor: pointer; margin: 0 10px; font-weight: bold; padding: 5px 10px; border-radius: 4px; transition: 0.3s;}
+        .menu-links button:hover { background: rgba(255,255,255,0.2); }
+        .menu-links button.active { background: white; color: var(--primary); }
         
         .container { max-width: 1000px; margin: 2rem auto; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
@@ -30,23 +32,34 @@
         .section.active { display: block; }
 
         h2 { border-bottom: 2px solid var(--primary); padding-bottom: 10px; color: var(--primary); }
+        h3 { color: var(--secondary); margin-top: 1.5rem; }
         
         /* Forms */
         .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: .5rem; font-weight: bold; }
-        input, select, btn { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button.btn-save { background: var(--primary); color: white; border: none; padding: 12px; cursor: pointer; font-size: 1rem; }
-        button.btn-save:hover { opacity: 0.9; }
+        label { display: block; margin-bottom: .5rem; font-weight: bold; font-size: 0.9rem;}
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-family: inherit;}
+        button.btn-action { background: var(--primary); color: white; border: none; padding: 10px 15px; cursor: pointer; font-size: 1rem; border-radius: 4px; font-weight: bold;}
+        button.btn-action:hover { background: #2b6cb0; }
+        button.btn-danger { background: var(--accent); color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;}
 
         /* Tables */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        th { background: #edf2f7; }
+        th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; }
+        th { background: #edf2f7; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f8fafc; }
 
-        #admin-panel { border: 2px solid var(--accent); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+        /* Admin Only Elements */
+        .admin-only { display: none; background: #ebf8ff; padding: 15px; border-left: 4px solid #3182ce; border-radius: 4px; margin-top: 1rem; margin-bottom: 1rem;}
+        
+        /* Badges */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;}
         .badge-estagio { background: #bee3f8; color: #2b6cb0; }
         .badge-liga { background: #fed7d7; color: #9b2c2c; }
+        
+        .category-block { margin-bottom: 2rem; }
+        .material-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; align-items: center;}
+        .material-item a { color: var(--primary); text-decoration: none; font-weight: bold;}
+        .material-item a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -54,68 +67,109 @@
 <nav>
     <strong>LIGA DE CIRURGIA - PORTAL</strong>
     <div class="menu-links">
-        <button onclick="showSection('home')">Início</button>
-        <button onclick="showSection('frequencia')">Frequência</button>
-        <button onclick="showSection('biblioteca')">Biblioteca</button>
-        <button id="btn-admin-view" onclick="showSection('admin')" style="display:none;">ADM / Secretaria</button>
-        <button id="btn-login" onclick="loginAdmin()">Login Admin</button>
+        <button id="nav-frequencia" class="active" onclick="showSection('frequencia')">Frequência</button>
+        <button id="nav-biblioteca" onclick="showSection('biblioteca')">Biblioteca</button>
+        <button id="nav-membros" class="admin-only" style="display:none;" onclick="showSection('membros')">Gestão de Membros</button>
+        <button id="btn-login" onclick="toggleLogin()" style="background: var(--secondary); color: white;">Acesso Sec.</button>
     </div>
 </nav>
 
 <div class="container">
     
-    <!-- HOME / AREA DO MEMBRO -->
-    <section id="home" class="section active">
-        <h2>Área do Membro</h2>
-        <p>Bem-vindo ao portal da secretaria. Aqui você pode conferir suas faltas e materiais.</p>
-        <div id="status-membro">
-            <input type="text" id="busca-matricula" placeholder="Digite sua matrícula para ver faltas">
-            <button onclick="consultarFaltas()" class="btn-save" style="width: auto;">Consultar</button>
-            <div id="resultado-busca"></div>
-        </div>
-    </section>
+    <!-- FREQUENCIA (Visão Geral e Chamada) -->
+    <section id="frequencia" class="section active">
+        <h2>Frequência dos Membros</h2>
+        <p>Acompanhe o painel de presenças e faltas da liga.</p>
 
-    <!-- FREQUENCIA -->
-    <section id="frequencia" class="section">
-        <h2>Registrar Frequência</h2>
-        <div class="form-group">
-            <label>Selecione seu nome:</label>
-            <select id="select-membros-freq"></select>
+        <!-- PAINEL ADMIN: FAZER CHAMADA -->
+        <div class="admin-only">
+            <h3>📝 Registrar Nova Chamada</h3>
+            <div class="form-group">
+                <label>Tema / Descrição da Aula:</label>
+                <input type="text" id="tema-aula" placeholder="Ex: Aula de Suturas - 12/05">
+            </div>
+            <p style="font-weight: bold; margin-bottom: 5px;">Selecione os membros PRESENTES:</p>
+            <div id="lista-chamada" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: white; padding: 10px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                <!-- Preenchido via JS -->
+            </div>
+            <br>
+            <button class="btn-action" onclick="salvarChamada()">Salvar Chamada</button>
         </div>
-        <div class="form-group">
-            <label>Código da Aula (fornecido pelo secretário):</label>
-            <input type="text" id="cod-aula">
+
+        <!-- TABELA PÚBLICA -->
+        <div style="overflow-x: auto;">
+            <table id="tabela-frequencia">
+                <thead>
+                    <tr>
+                        <th>Membro</th>
+                        <th style="text-align: center;">Presenças</th>
+                        <th style="text-align: center;">Faltas</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-frequencia">
+                    <tr><td colspan="3">Carregando dados...</td></tr>
+                </tbody>
+            </table>
         </div>
-        <button class="btn-save" onclick="salvarPresenca()">Salvar Presença</button>
     </section>
 
     <!-- BIBLIOTECA -->
     <section id="biblioteca" class="section">
         <h2>Biblioteca Digital</h2>
-        <div id="lista-atas">
-            <h3>Atas de Reunião</h3>
-            <ul id="ul-atas"></ul>
-        </div>
-        <hr>
-        <h3>Materiais de Estudo</h3>
-        <p>Espaço reservado para protocolos e artigos.</p>
-    </section>
+        <p>Acesse os materiais de estudo, protocolos e atas da liga.</p>
 
-    <!-- ADMIN PANEL -->
-    <section id="admin" class="section">
-        <div id="admin-panel">
-            <h2>Painel do Administrador (Secretaria)</h2>
-            
-            <h3>Cadastrar Novo Membro</h3>
+        <!-- PAINEL ADMIN: ADICIONAR MATERIAL -->
+        <div class="admin-only">
+            <h3>📚 Adicionar Novo Material</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <div class="form-group">
-                    <label>Nome:</label>
-                    <input type="text" id="adm-nome">
+                    <label>Título do Material:</label>
+                    <input type="text" id="mat-titulo" placeholder="Ex: Protocolo de Apendicite">
                 </div>
                 <div class="form-group">
-                    <label>Matrícula:</label>
-                    <input type="text" id="adm-mat">
+                    <label>Categoria:</label>
+                    <!-- Permite escolher ou digitar uma nova -->
+                    <input type="text" id="mat-categoria" list="categorias-list" placeholder="Ex: Atas, Artigos, Protocolos...">
+                    <datalist id="categorias-list">
+                        <option value="Atas">
+                        <option value="Artigos">
+                        <option value="Protocolos">
+                    </datalist>
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Tipo de Conteúdo:</label>
+                <select id="mat-tipo" onchange="toggleMatTipo()">
+                    <option value="arquivo">Fazer Upload de Arquivo (PDF, Imagem)</option>
+                    <option value="link">Adicionar Link ou Texto Longo</option>
+                </select>
+            </div>
+            <div class="form-group" id="div-upload">
+                <input type="file" id="mat-arquivo">
+            </div>
+            <div class="form-group" id="div-link" style="display: none;">
+                <textarea id="mat-link" rows="3" placeholder="Cole o link (Google Drive, Youtube, etc) ou digite um texto..."></textarea>
+            </div>
+            
+            <button class="btn-action" onclick="salvarMaterial()">Publicar Material</button>
+        </div>
+
+        <!-- ACERVO PÚBLICO -->
+        <div id="acervo-biblioteca">
+            <!-- Preenchido via JS, separado por categorias -->
+            <p>Carregando materiais...</p>
+        </div>
+    </section>
+
+    <!-- GESTÃO DE MEMBROS (SOMENTE ADMIN) -->
+    <section id="membros" class="section">
+        <h2>Gestão de Membros</h2>
+        
+        <div class="admin-only" style="display: block;"> <!-- Forçado block pois a aba toda é admin -->
+            <h3>Cadastrar Novo Membro</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group"><label>Nome:</label><input type="text" id="adm-nome"></div>
+                <div class="form-group"><label>Matrícula:</label><input type="text" id="adm-mat"></div>
                 <div class="form-group">
                     <label>Semestre:</label>
                     <select id="adm-sem">
@@ -125,10 +179,7 @@
                         <option>10º Semestre</option><option>11º Semestre</option><option>12º Semestre</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Cargo:</label>
-                    <input type="text" id="adm-cargo" placeholder="Ex: Ligante, Diretor...">
-                </div>
+                <div class="form-group"><label>Cargo:</label><input type="text" id="adm-cargo" placeholder="Ex: Ligante, Diretor..."></div>
                 <div class="form-group">
                     <label>Modalidade:</label>
                     <select id="adm-mod">
@@ -137,150 +188,369 @@
                     </select>
                 </div>
             </div>
-            <button class="btn-save" onclick="cadastrarMembro()">Cadastrar Membro</button>
+            <button class="btn-action" onclick="cadastrarMembro()">Salvar Membro</button>
 
-            <h3 style="margin-top: 2rem;">Gerenciar Membros</h3>
-            <table id="tabela-membros">
+            <h3 style="margin-top: 2rem;">Membros Cadastrados</h3>
+            <table id="tabela-membros-admin">
                 <thead>
-                    <tr><th>Nome</th><th>Matrícula</th><th>Modalidade</th><th>Status</th></tr>
+                    <tr><th>Nome</th><th>Matrícula</th><th>Modalidade</th><th>Ação</th></tr>
                 </thead>
-                <tbody id="tbody-membros"></tbody>
+                <tbody id="tbody-membros-admin"></tbody>
             </table>
-
-            <h3 style="margin-top: 2rem;">Subir Ata de Reunião</h3>
-            <input type="file" id="input-ata">
-            <input type="text" id="titulo-ata" placeholder="Título da Ata">
-            <button onclick="subirAta()">Upload Ata</button>
         </div>
     </section>
 
 </div>
 
 <script>
-    // --- CONFIGURAÇÃO FIREBASE (Atualizada com seus dados) ---
+    // --- CONFIGURAÇÃO FIREBASE ---
+    // COLOQUE SUAS CHAVES AQUI
     const firebaseConfig = {
-        apiKey: "AIzaSyA2ef4mY9sm-cVPkAq0bwzBjsgmRLN2_jQ",
+        apiKey: "SUA_API_KEY",
         authDomain: "portal-liga-de-cirurgia.firebaseapp.com",
         databaseURL: "https://portal-liga-de-cirurgia-default-rtdb.firebaseio.com",
         projectId: "portal-liga-de-cirurgia",
         storageBucket: "portal-liga-de-cirurgia.firebasestorage.app",
-        messagingSenderId: "408679438531",
-        appId: "1:408679438531:web:46667abc7bcdd9b9d2ea76"
+        messagingSenderId: "SEU_SENDER_ID",
+        appId: "SEU_APP_ID"
     };
 
-    // Inicializando o Firebase com as bibliotecas 'compat'
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
     const auth = firebase.auth();
     const storage = firebase.storage();
 
-    // --- LÓGICA DE NAVEGAÇÃO ---
+    // --- CONTROLE DE NAVEGAÇÃO ---
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(id === 'frequencia' || id === 'admin') carregarMembros();
-        if(id === 'biblioteca') carregarAtas();
+        
+        document.querySelectorAll('.menu-links button').forEach(b => b.classList.remove('active'));
+        document.getElementById('nav-' + id).classList.add('active');
+
+        if(id === 'frequencia') carregarDadosFrequencia();
+        if(id === 'biblioteca') carregarBiblioteca();
+        if(id === 'membros') carregarMembrosAdmin();
     }
 
-    // --- LOGIN ADMIN ---
-    function loginAdmin() {
-        const email = prompt("E-mail do Admin:");
-        const senha = prompt("Senha:");
-        auth.signInWithEmailAndPassword(email, senha)
-            .then(() => {
-                alert("Logado como Admin!");
-                document.getElementById('btn-admin-view').style.display = 'inline-block';
-                document.getElementById('btn-login').innerText = 'Logout';
-            })
-            .catch(error => alert("Erro: " + error.message));
-    }
+    // --- AUTENTICAÇÃO E PERSISTÊNCIA (ADMIN) ---
+    auth.onAuthStateChanged((user) => {
+        const btnLogin = document.getElementById('btn-login');
+        const adminElements = document.querySelectorAll('.admin-only');
+        const navMembros = document.getElementById('nav-membros');
 
-    // --- CADASTRO DE MEMBROS (ADMIN) ---
-    function cadastrarMembro() {
-        const dados = {
-            nome: document.getElementById('adm-nome').value,
-            matricula: document.getElementById('adm-mat').value,
-            semestre: document.getElementById('adm-sem').value,
-            cargo: document.getElementById('adm-cargo').value,
-            modalidade: document.getElementById('adm-mod').value,
-            status: "Ativo",
-            faltas: 0
-        };
-
-        db.collection("membros").add(dados).then(() => {
-            alert("Membro cadastrado com sucesso!");
-            carregarMembros();
-        });
-    }
-
-    // --- CARREGAR DADOS NA TABELA E NO SELECT ---
-    function carregarMembros() {
-        const tbody = document.getElementById('tbody-membros');
-        const select = document.getElementById('select-membros-freq');
-        tbody.innerHTML = '';
-        select.innerHTML = '<option>Selecione...</option>';
-
-        db.collection("membros").get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const m = doc.data();
-                // Preenche Tabela Admin
-                tbody.innerHTML += `<tr>
-                    <td>${m.nome}</td>
-                    <td>${m.matricula}</td>
-                    <td><span class="badge ${m.modalidade === 'Só Liga' ? 'badge-liga' : 'badge-estagio'}">${m.modalidade}</span></td>
-                    <td>${m.status}</td>
-                </tr>`;
-                // Preenche Select de Frequência
-                select.innerHTML += `<option value="${doc.id}">${m.nome}</option>`;
-            });
-        });
-    }
-
-    // --- SALVAR FREQUÊNCIA ---
-    function salvarPresenca() {
-        const membroId = document.getElementById('select-membros-freq').value;
-        const codigo = document.getElementById('cod-aula').value;
-
-        if(codigo === "1234") { // Exemplo de código simples
-            db.collection("frequencias").add({
-                membroId: membroId,
-                data: new Date().toLocaleDateString(),
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Presença confirmada!");
+        if (user) {
+            // Logado como secretaria
+            btnLogin.innerText = 'Sair do Sistema';
+            btnLogin.style.background = 'var(--accent)';
+            navMembros.style.display = 'inline-block';
+            adminElements.forEach(el => {
+                // Se a seção for a de membros que por padrão é block dentro dela
+                if(el.closest('#membros') === null) el.style.display = 'block';
             });
         } else {
-            alert("Código da aula incorreto!");
+            // Visitante / Membro comum
+            btnLogin.innerText = 'Acesso Sec.';
+            btnLogin.style.background = 'var(--secondary)';
+            navMembros.style.display = 'none';
+            adminElements.forEach(el => el.style.display = 'none');
+            // Se tentar sair estando na aba de membros, joga pra frequencia
+            if(document.getElementById('membros').classList.contains('active')) {
+                showSection('frequencia');
+            }
+        }
+    });
+
+    function toggleLogin() {
+        if (auth.currentUser) {
+            auth.signOut().then(() => alert("Você saiu do sistema."));
+        } else {
+            const email = prompt("E-mail da Secretaria:");
+            if(!email) return;
+            const senha = prompt("Senha:");
+            auth.signInWithEmailAndPassword(email, senha)
+                .catch(error => alert("Erro ao logar: " + error.message));
         }
     }
 
-    // --- UPLOAD DE ATAS ---
-    async function subirAta() {
-        const file = document.getElementById('input-ata').files[0];
-        const titulo = document.getElementById('titulo-ata').value;
-        if(!file) return alert("Selecione um arquivo");
+    // --- CARREGAR DADOS DE FREQUÊNCIA ---
+    async function carregarDadosFrequencia() {
+        const tbody = document.getElementById('tbody-frequencia');
+        const listaChamada = document.getElementById('lista-chamada');
+        
+        tbody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
+        listaChamada.innerHTML = '';
 
-        const ref = storage.ref(`atas/${file.name}`);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
+        try {
+            // Busca o total de aulas realizadas
+            const aulasSnap = await db.collection("aulas").get();
+            const totalAulas = aulasSnap.size;
 
-        db.collection("atas").add({
-            titulo: titulo,
-            url: url,
-            data: new Date().toLocaleDateString()
-        }).then(() => alert("Ata enviada!"));
+            // Busca os membros
+            const membrosSnap = await db.collection("membros").get();
+            
+            tbody.innerHTML = ''; // Limpa tabela
+
+            membrosSnap.forEach((doc) => {
+                const m = doc.data();
+                const membroId = doc.id;
+                
+                // Calcula presenças deste membro
+                let presencas = 0;
+                aulasSnap.forEach(aulaDoc => {
+                    const aula = aulaDoc.data();
+                    if(aula.presentes && aula.presentes.includes(membroId)) {
+                        presencas++;
+                    }
+                });
+
+                const faltas = totalAulas - presencas;
+
+                // Tabela Pública
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${m.nome}</strong></td>
+                        <td style="text-align: center; color: green; font-weight: bold;">${presencas}</td>
+                        <td style="text-align: center; color: red; font-weight: bold;">${faltas}</td>
+                    </tr>
+                `;
+
+                // Renderiza Checkboxes para a Nova Chamada (Admin)
+                listaChamada.innerHTML += `
+                    <label style="font-weight: normal; cursor: pointer;">
+                        <input type="checkbox" class="check-presenca" value="${membroId}"> 
+                        ${m.nome}
+                    </label>
+                `;
+            });
+
+            if(membrosSnap.empty) {
+                tbody.innerHTML = '<tr><td colspan="3">Nenhum membro cadastrado.</td></tr>';
+            }
+
+        } catch(e) {
+            console.error(e);
+            tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar dados.</td></tr>';
+        }
     }
 
-    function carregarAtas() {
-        const ul = document.getElementById('ul-atas');
-        ul.innerHTML = '';
-        db.collection("atas").get().then(snap => {
-            snap.forEach(doc => {
-                const ata = doc.data();
-                ul.innerHTML += `<li><a href="${ata.url}" target="_blank">${ata.data} - ${ata.titulo}</a></li>`;
+    // --- SALVAR CHAMADA (ADMIN) ---
+    function salvarChamada() {
+        const tema = document.getElementById('tema-aula').value;
+        if(!tema) return alert("Digite o tema ou data da aula!");
+
+        const checkboxes = document.querySelectorAll('.check-presenca');
+        const presentes = [];
+        
+        checkboxes.forEach(chk => {
+            if(chk.checked) presentes.push(chk.value);
+        });
+
+        const confirmacao = confirm(`Salvar aula "${tema}" com ${presentes.length} presentes?`);
+        if(!confirmacao) return;
+
+        db.collection("aulas").add({
+            tema: tema,
+            dataCadastro: new Date().toLocaleDateString(),
+            presentes: presentes,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert("Chamada salva com sucesso!");
+            document.getElementById('tema-aula').value = '';
+            carregarDadosFrequencia(); // Atualiza a tela
+        }).catch(e => alert("Erro ao salvar: " + e.message));
+    }
+
+    // --- GESTÃO DE MEMBROS (ADMIN) ---
+    function cadastrarMembro() {
+        const nome = document.getElementById('adm-nome').value;
+        const matricula = document.getElementById('adm-mat').value;
+        
+        if(!nome || !matricula) return alert("Nome e matrícula são obrigatórios!");
+
+        const dados = {
+            nome: nome,
+            matricula: matricula,
+            semestre: document.getElementById('adm-sem').value,
+            cargo: document.getElementById('adm-cargo').value,
+            modalidade: document.getElementById('adm-mod').value,
+            dataCadastro: new Date().toLocaleDateString()
+        };
+
+        db.collection("membros").add(dados).then(() => {
+            alert("Membro cadastrado!");
+            // Limpa form
+            document.getElementById('adm-nome').value = '';
+            document.getElementById('adm-mat').value = '';
+            document.getElementById('adm-cargo').value = '';
+            carregarMembrosAdmin();
+        });
+    }
+
+    function carregarMembrosAdmin() {
+        const tbody = document.getElementById('tbody-membros-admin');
+        tbody.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
+
+        db.collection("membros").get().then((snap) => {
+            tbody.innerHTML = '';
+            snap.forEach((doc) => {
+                const m = doc.data();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.nome}</td>
+                        <td>${m.matricula}</td>
+                        <td><span class="badge ${m.modalidade === 'Só Liga' ? 'badge-liga' : 'badge-estagio'}">${m.modalidade}</span></td>
+                        <td>
+                            <button class="btn-danger" onclick="excluirMembro('${doc.id}')">Excluir</button>
+                        </td>
+                    </tr>
+                `;
             });
         });
     }
+
+    function excluirMembro(id) {
+        if(confirm("Tem certeza que deseja excluir este membro? O histórico de frequência dele continuará nas aulas, mas ele não aparecerá mais na tabela.")) {
+            db.collection("membros").doc(id).delete().then(() => {
+                carregarMembrosAdmin();
+            });
+        }
+    }
+
+    // --- BIBLIOTECA (PÚBLICA E ADMIN) ---
+    function toggleMatTipo() {
+        const tipo = document.getElementById('mat-tipo').value;
+        if(tipo === 'arquivo') {
+            document.getElementById('div-upload').style.display = 'block';
+            document.getElementById('div-link').style.display = 'none';
+        } else {
+            document.getElementById('div-upload').style.display = 'none';
+            document.getElementById('div-link').style.display = 'block';
+        }
+    }
+
+    async function salvarMaterial() {
+        const titulo = document.getElementById('mat-titulo').value;
+        let categoria = document.getElementById('mat-categoria').value;
+        const tipo = document.getElementById('mat-tipo').value;
+        
+        if(!titulo || !categoria) return alert("Título e Categoria são obrigatórios!");
+        
+        // Padroniza a primeira letra da categoria em maiúscula
+        categoria = categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
+
+        const btn = document.querySelector('#biblioteca .btn-action');
+        btn.innerText = "Enviando...";
+        btn.disabled = true;
+
+        try {
+            let dadosMat = {
+                titulo: titulo,
+                categoria: categoria,
+                dataCadastro: new Date().toLocaleDateString(),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if(tipo === 'arquivo') {
+                const file = document.getElementById('mat-arquivo').files[0];
+                if(!file) throw new Error("Selecione um arquivo!");
+                const ref = storage.ref(`biblioteca/${Date.now()}_${file.name}`);
+                await ref.put(file);
+                dadosMat.url = await ref.getDownloadURL();
+                dadosMat.isLink = false;
+            } else {
+                const linkText = document.getElementById('mat-link').value;
+                if(!linkText) throw new Error("Digite o texto ou link!");
+                dadosMat.url = linkText;
+                // Simples verificação se é um link ou só um texto
+                dadosMat.isLink = linkText.startsWith('http'); 
+                dadosMat.textoCurto = true;
+            }
+
+            await db.collection("materiais").add(dadosMat);
+            alert("Material publicado com sucesso!");
+            
+            // Limpa form
+            document.getElementById('mat-titulo').value = '';
+            document.getElementById('mat-arquivo').value = '';
+            document.getElementById('mat-link').value = '';
+            
+            carregarBiblioteca();
+
+        } catch(e) {
+            alert("Erro: " + e.message);
+        } finally {
+            btn.innerText = "Publicar Material";
+            btn.disabled = false;
+        }
+    }
+
+    function carregarBiblioteca() {
+        const acervo = document.getElementById('acervo-biblioteca');
+        acervo.innerHTML = '<p>Carregando...</p>';
+
+        db.collection("materiais").orderBy("timestamp", "desc").get().then((snap) => {
+            if(snap.empty) {
+                acervo.innerHTML = '<p>Nenhum material cadastrado ainda.</p>';
+                return;
+            }
+
+            // Agrupa os materiais por categoria
+            const categoriasObj = {};
+            snap.forEach(doc => {
+                const m = doc.data();
+                if(!categoriasObj[m.categoria]) categoriasObj[m.categoria] = [];
+                categoriasObj[m.categoria].push({ id: doc.id, ...m });
+            });
+
+            acervo.innerHTML = '';
+            
+            // Renderiza os blocos por categoria
+            for (const cat in categoriasObj) {
+                let htmlBloco = `<div class="category-block">
+                                    <h3 style="border-bottom: 2px solid #cbd5e0; padding-bottom: 5px;">📁 ${cat}</h3>`;
+                
+                categoriasObj[cat].forEach(mat => {
+                    let btnExcluir = auth.currentUser ? `<button class="btn-danger" style="font-size:0.7rem;" onclick="excluirMaterial('${mat.id}')">Excluir</button>` : '';
+                    
+                    let linkOuTexto = '';
+                    if(!mat.textoCurto || mat.isLink) {
+                        linkOuTexto = `<a href="${mat.url}" target="_blank">${mat.titulo}</a>`;
+                    } else {
+                        // É um texto puro
+                        linkOuTexto = `<span><strong>${mat.titulo}</strong>: ${mat.url}</span>`;
+                    }
+
+                    htmlBloco += `
+                        <div class="material-item">
+                            <div>
+                                <span style="font-size:0.8rem; color:#718096;">[${mat.dataCadastro}]</span> 
+                                ${linkOuTexto}
+                            </div>
+                            ${btnExcluir}
+                        </div>
+                    `;
+                });
+
+                htmlBloco += `</div>`;
+                acervo.innerHTML += htmlBloco;
+            }
+        });
+    }
+
+    function excluirMaterial(id) {
+        if(confirm("Excluir este material permanentemente?")) {
+            db.collection("materiais").doc(id).delete().then(() => {
+                carregarBiblioteca();
+            });
+        }
+    }
+
+    // Inicia na aba de Frequência
+    window.onload = () => { showSection('frequencia'); }
+
 </script>
 
 </body>

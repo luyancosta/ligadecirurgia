@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIANCI - Portal da Secretaria</title>
+    <title>Portal LIANCI - Secretaria</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -35,14 +35,15 @@
             font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-main);
+            overflow-x: hidden; /* Evita scroll horizontal indesejado */
         }
 
-        /* NAVEGAÇÃO E LOGO */
+        /* NAVEGAÇÃO RESPONSIVA */
         nav {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             color: var(--white);
-            padding: 0 5%;
-            height: 80px;
+            padding: 10px 5%;
+            min-height: 80px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -53,67 +54,70 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        .brand { display: flex; align-items: center; gap: 15px; }
-        
+        .brand { display: flex; align-items: center; gap: 12px; }
         .brand img {
-            height: 60px;
-            width: 60px;
+            height: 50px;
+            width: 50px;
             object-fit: contain;
             border: 2px solid var(--accent);
             border-radius: 50%;
             background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .brand-text h1 { margin: 0; font-family: 'Merriweather', serif; font-size: 1.2rem; letter-spacing: 1px; }
+        .brand-text h1 { margin: 0; font-family: 'Merriweather', serif; font-size: 1.1rem; letter-spacing: 1px; }
 
-        .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .nav-links { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+        
         .nav-links button {
             background: transparent;
             border: none;
             color: var(--white);
             font-weight: 600;
-            padding: 10px 18px;
+            padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
             transition: 0.3s;
             text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
         .nav-links button:hover { color: var(--accent-light); background: rgba(255,255,255,0.1); }
-        .nav-links button.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
+        .nav-links button.active { border-bottom: 2px solid var(--accent); color: var(--accent); background: rgba(255,255,255,0.05); }
 
-        /* LAYOUT PRINCIPAL E MARCA D'ÁGUA */
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        /* LAYOUT E MARCA D'ÁGUA */
+        .container { 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            padding: 0 15px; 
+        }
 
         .slide-card {
             background: var(--white);
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 25px;
             display: none;
-            animation: slideUp 0.5s ease-out;
-            min-height: 500px;
-            border-top: 5px solid var(--primary);
+            animation: slideUp 0.4s ease-out;
+            min-height: 450px;
+            border-top: 6px solid var(--primary);
             position: relative;
             z-index: 1;
-            overflow: hidden;
         }
         
-        /* MARCA D'ÁGUA DA LOGO NO FUNDO */
+        /* Marca d'água responsiva */
         .slide-card::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
+            width: 80%;
+            max-width: 350px;
+            height: 350px;
             background-image: url('logo.jpg');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.03; /* Transparência bem suave */
+            opacity: 0.03;
             z-index: -1;
             pointer-events: none;
         }
@@ -121,84 +125,89 @@
         .slide-card.active { display: block; }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h2.section-header {
             font-family: 'Merriweather', serif;
             color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 30px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
-        /* PAINEL ADMIN */
+        /* PAINÉIS E GRIDS RESPONSIVOS */
         .admin-panel {
             background: #fdfaf4;
             border: 1px solid var(--accent);
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            position: relative;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
         }
         
-        .admin-panel input, .admin-panel select {
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 15px; 
+        }
+
+        /* TABELAS RESPONSIVAS */
+        .table-wrapper { 
             width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            font-family: inherit;
-            margin-bottom: 15px;
+            overflow-x: auto; 
+            margin-top: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #e2e8f0; 
+            background: var(--white); 
+            -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
         }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: var(--primary); color: var(--white); padding: 12px; text-align: left; font-size: 0.85rem; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 0.9rem; }
 
-        /* TABELAS E BADGES */
-        .table-wrapper { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: var(--white); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: var(--primary); color: var(--white); padding: 15px; text-align: left; font-size: 0.9rem; }
-        td { padding: 15px; border-bottom: 1px solid #edf2f7; }
-        tr:hover { background: #f1f5f9; }
-
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;}
+        /* COMPONENTES */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
         .bg-presenca { background: #c6f6d5; color: #22543d; }
         .bg-falta { background: #fed7d7; color: #9b2c2c; }
         .bg-justificada { background: #bee3f8; color: #2b6cb0; }
         .bg-gold { background: #fefcbf; color: #744210; }
 
-        /* BOTÕES */
         .btn-gold {
             background: var(--accent);
             color: var(--white);
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 6px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
+            width: 100%; /* Botões ocupam largura total no mobile por padrão */
         }
-        .btn-gold:hover { background: var(--primary-dark); }
         
-        .btn-small { padding: 6px 12px; font-size: 0.8rem; margin-left: 5px;}
-        .btn-danger { background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .btn-edit { background: var(--warning); color: white; border: none; border-radius: 4px; cursor: pointer; }
+        @media (min-width: 768px) {
+            .btn-gold { width: auto; }
+        }
 
-        /* ACORDEON DE DIAS */
-        .day-item { border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; background: var(--white); }
-        .day-header { background: #f8fafc; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; border-radius: 8px;}
-        .day-header:hover { background: #edf2f7; }
-        .day-content { display: none; padding: 20px; border-top: 1px solid #e2e8f0; }
+        .btn-small { padding: 6px 10px; font-size: 0.75rem; margin: 2px; display: inline-block; }
+
+        /* ACORDEON */
+        .day-header { background: #f8fafc; padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; font-size: 0.9rem; }
+        .day-content { display: none; padding: 15px; border-top: 1px solid #e2e8f0; font-size: 0.85rem; }
         
-        /* BLOCOS DE MATERIAIS / ATAS */
-        .material-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e2e8f0; background: var(--white); }
-        .category-block { margin-bottom: 30px; }
-        .category-block h3 { color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        
-        /* Modal de Edição (Estilo Inline) */
-        .edit-mode-bg { background-color: #fffaf0 !important; border-color: var(--warning) !important;}
+        /* MEDIA QUERIES ESPECÍFICAS */
+        @media (max-width: 768px) {
+            nav { justify-content: center; flex-direction: column; height: auto; gap: 15px; padding: 15px; }
+            .brand { flex-direction: column; text-align: center; }
+            .container { margin: 10px auto; }
+            .slide-card { padding: 20px; }
+            h2.section-header { font-size: 1.3rem; }
+            .nav-links button { padding: 6px 8px; font-size: 0.7rem; }
+            .material-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -208,7 +217,6 @@
         <img src="logo.jpg" alt="Logo LIANCI" onerror="this.src='https://via.placeholder.com/60/004d40/b2945d?text=LIANCI'">
         <div class="brand-text">
             <h1>PORTAL LIANCI</h1>
-            <small style="color: var(--accent-light);">Secretaria Acadêmica</small>
         </div>
     </div>
     <div class="nav-links">
@@ -217,7 +225,7 @@
         <button id="nav-bib" onclick="showSlide('bib')">Biblioteca</button>
         <button id="nav-plantoes" onclick="showSlide('plantoes')">Plantões</button>
         <button id="nav-adm" style="display:none;" onclick="showSlide('adm')">Membros</button>
-        <button id="btn-login-main" onclick="toggleLogin()" style="background: var(--accent); color: white;">Login Sec.</button>
+        <button id="btn-login-main" onclick="toggleLogin()" style="border: 1px solid var(--accent);">Login</button>
     </div>
 </nav>
 
@@ -228,20 +236,22 @@
         
         <div id="panel-chamada" class="admin-panel admin-only" style="display:none;">
             <h3 id="titulo-painel-chamada">Nova Chamada</h3>
-            <input type="text" id="aula-tema" placeholder="Tema da Reunião / Aula">
+            <input type="text" id="aula-tema" placeholder="Tema da Reunião ou Aula">
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>Membro</th><th>Status da Presença</th></tr></thead>
+                    <thead><tr><th>Membro</th><th>Status</th></tr></thead>
                     <tbody id="tbody-chamada-input"></tbody>
                 </table>
             </div>
-            <button id="btn-salvar-chamada" class="btn-gold" style="margin-top:15px;" onclick="salvarAula()">Finalizar e Salvar Chamada</button>
-            <button id="btn-cancelar-edicao" class="btn-gold" style="margin-top:15px; display:none; background: #a0aec0;" onclick="cancelarEdicaoAula()">Cancelar Edição</button>
+            <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button id="btn-salvar-chamada" class="btn-gold" onclick="salvarAula()">Salvar Chamada</button>
+                <button id="btn-cancelar-edicao" class="btn-gold" style="display:none; background: #a0aec0;" onclick="cancelarEdicaoAula()">Cancelar</button>
+            </div>
         </div>
 
-        <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-            <button class="btn-gold" onclick="switchFreqView('dias')">Ver Histórico por Dias</button>
-            <button class="btn-gold" onclick="switchFreqView('ranking')">Ver Ranking de Presença</button>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="btn-gold" onclick="switchFreqView('dias')">Histórico por Dias</button>
+            <button class="btn-gold" onclick="switchFreqView('ranking')">Ranking de Presença</button>
         </div>
 
         <div id="freq-view-dias">
@@ -254,8 +264,8 @@
                     <thead>
                         <tr>
                             <th>Membro</th>
-                            <th>Presenças</th>
-                            <th>Justificadas</th>
+                            <th>Pres.</th>
+                            <th>Just.</th>
                             <th>Faltas</th>
                         </tr>
                     </thead>
@@ -267,82 +277,72 @@
 
     <section id="slide-atas" class="slide-card">
         <h2 class="section-header"><i class="fa-solid fa-file-lines"></i> Atas de Reunião</h2>
-        
         <div class="admin-panel admin-only" style="display:none;">
-            <h3>Publicar Nova Ata</h3>
+            <h3>Publicar Ata</h3>
             <div class="grid-2">
-                <input type="text" id="ata-titulo" placeholder="Título da Ata (Ex: Reunião Administrativa)">
-                <input type="date" id="ata-data" title="Data da Reunião">
+                <input type="text" id="ata-titulo" placeholder="Título da Ata">
+                <input type="date" id="ata-data">
             </div>
-            <input type="text" id="ata-link" placeholder="Link do Arquivo (Google Drive)">
-            <button class="btn-gold" onclick="salvarAta()">Adicionar Ata</button>
+            <input type="text" id="ata-link" placeholder="Link do Google Drive">
+            <button class="btn-gold" onclick="salvarAta()">Adicionar</button>
         </div>
-        
         <div id="atas-list"></div>
     </section>
 
     <section id="slide-bib" class="slide-card">
-        <h2 class="section-header"><i class="fa-solid fa-book-medical"></i> Biblioteca Digital</h2>
-        
+        <h2 class="section-header"><i class="fa-solid fa-book-medical"></i> Biblioteca</h2>
         <div class="admin-panel admin-only" style="display:none;">
             <h3>Novo Material</h3>
             <div class="grid-2">
-                <input type="text" id="bib-titulo" placeholder="Título do Material">
-                <input type="text" id="bib-cat" list="cats-bib" placeholder="Selecione ou digite a Categoria">
+                <input type="text" id="bib-titulo" placeholder="Título">
+                <input type="text" id="bib-cat" list="cats-bib" placeholder="Protocolos, Artigos ou VideoAulas">
                 <datalist id="cats-bib">
                     <option value="Protocolos">
                     <option value="Artigos">
                     <option value="VideoAulas">
                 </datalist>
             </div>
-            <input type="text" id="bib-link" placeholder="Link (Drive/YouTube)">
-            <button class="btn-gold" onclick="salvarBib()">Salvar na Biblioteca</button>
+            <input type="text" id="bib-link" placeholder="Link de Acesso">
+            <button class="btn-gold" onclick="salvarBib()">Publicar</button>
         </div>
-        
         <div id="bib-list"></div>
     </section>
 
     <section id="slide-plantoes" class="slide-card">
-        <h2 class="section-header"><i class="fa-solid fa-user-doctor"></i> Escala de Plantões</h2>
-        
+        <h2 class="section-header"><i class="fa-solid fa-user-doctor"></i> Plantões</h2>
         <div class="admin-panel admin-only" style="display:none;">
-            <h3>Registrar Plantão Mensal</h3>
+            <h3>Registrar Plantão</h3>
             <div class="grid-2">
-                <select id="p-membro">
-                    <option value="">Selecione o Membro...</option>
-                </select>
-                <input type="month" id="p-mes" title="Mês de Referência">
+                <select id="p-membro"><option value="">Membro...</option></select>
+                <input type="month" id="p-mes">
             </div>
-            <input type="number" id="p-qtd" placeholder="Quantidade de Plantões dados no Mês">
-            <button class="btn-gold" onclick="salvarPlantao()">Registrar Plantões</button>
+            <input type="number" id="p-qtd" placeholder="Quantidade de Plantões">
+            <button class="btn-gold" onclick="salvarPlantao()">Salvar</button>
         </div>
-        
         <div id="plantoes-list"></div>
     </section>
 
     <section id="slide-adm" class="slide-card">
         <h2 class="section-header"><i class="fa-solid fa-users"></i> Gestão de Membros</h2>
-        
         <div id="panel-membro" class="admin-panel">
-            <h3 id="titulo-painel-membro">Cadastrar Novo Membro</h3>
+            <h3 id="titulo-painel-membro">Cadastro / Edição</h3>
             <div class="grid-2">
                 <input type="text" id="m-nome" placeholder="Nome Completo">
                 <input type="text" id="m-mat" placeholder="Matrícula">
-                <input type="text" id="m-sem" placeholder="Semestre Atual (Ex: 4º Semestre)">
+                <input type="text" id="m-sem" placeholder="Semestre (ex: 5º)">
                 <select id="m-mod">
                     <option value="Estágio + Liga">Estágio + Liga</option>
                     <option value="Só Liga">Só Liga</option>
                 </select>
             </div>
-            <button id="btn-salvar-membro" class="btn-gold" onclick="salvarFormularioMembro()">Cadastrar Membro</button>
-            <button id="btn-cancelar-membro" class="btn-gold" style="display:none; background: #a0aec0; margin-left: 10px;" onclick="cancelarEdicaoMembro()">Cancelar</button>
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <button id="btn-salvar-membro" class="btn-gold" onclick="salvarFormularioMembro()">Salvar Membro</button>
+                <button id="btn-cancelar-membro" class="btn-gold" style="display:none; background: #a0aec0;" onclick="cancelarEdicaoMembro()">Cancelar</button>
+            </div>
         </div>
-        
         <div class="table-wrapper">
             <table>
-                <thead>
-                    <tr><th>Nome</th><th>Matrícula</th><th>Semestre</th><th>Modalidade</th><th>Ações</th></tr>
-                </thead>
+                <thead><tr><th>Nome</th><th>Matrícula</th><th>Semestre</th><th>Modalidade</th><th>Ações</th></tr></thead>
                 <tbody id="tbody-membros-list"></tbody>
             </table>
         </div>
@@ -351,7 +351,7 @@
 </div>
 
 <script>
-    // --- CONFIGURAÇÃO FIREBASE ---
+    // --- FIREBASE CONFIG (SEUS DADOS) ---
     const firebaseConfig = {
         apiKey: "AIzaSyA2ef4mY9sm-cVPkAq0bwzBjsgmRLN2_jQ",
         authDomain: "portal-liga-de-cirurgia.firebaseapp.com",
@@ -361,16 +361,14 @@
         appId: "1:408679438531:web:46667abc7bcdd9b9d2ea76"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
 
     let idAulaEditando = null;
     let idMembroEditando = null;
 
-    // --- CONTROLE DE TELAS ---
+    // --- NAVEGAÇÃO ---
     function showSlide(id) {
         document.querySelectorAll('.slide-card').forEach(s => s.classList.remove('active'));
         document.getElementById('slide-' + id).classList.add('active');
@@ -389,19 +387,18 @@
         document.getElementById('freq-view-dias').style.display = view === 'dias' ? 'block' : 'none';
     }
 
-    // --- LOGIN ---
+    // --- AUTH ---
     auth.onAuthStateChanged(user => {
         const btn = document.getElementById('btn-login-main');
         const adminElements = document.querySelectorAll('.admin-only');
         const navAdm = document.getElementById('nav-adm');
-        
         if(user) {
-            btn.innerText = "Sair do Sistema";
+            btn.innerText = "Sair";
             navAdm.style.display = "block";
             adminElements.forEach(el => el.style.display = "block");
             carregarDadosFrequencia();
         } else {
-            btn.innerText = "Login Sec.";
+            btn.innerText = "Acesso Sec.";
             navAdm.style.display = "none";
             adminElements.forEach(el => el.style.display = "none");
             carregarDadosFrequencia();
@@ -409,17 +406,15 @@
     });
 
     function toggleLogin() {
-        if(auth.currentUser) {
-            auth.signOut().then(() => alert("Deslogado com sucesso."));
-        } else {
-            const email = prompt("E-mail da Secretaria:");
-            if(!email) return;
+        if(auth.currentUser) auth.signOut();
+        else {
+            const email = prompt("E-mail Secretaria:");
             const pass = prompt("Senha:");
-            if(pass) auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Erro ao logar: " + e.message));
+            if(email && pass) auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Erro ao logar."));
         }
     }
 
-    // --- LÓGICA DE FREQUÊNCIA ---
+    // --- FREQUÊNCIA ---
     async function carregarDadosFrequencia() {
         const rankingBody = document.getElementById('tbody-ranking');
         const diasContainer = document.getElementById('lista-dias-container');
@@ -430,17 +425,11 @@
 
         inputChamada.innerHTML = '';
         membrosSnap.forEach(doc => {
-            inputChamada.innerHTML += `
-                <tr>
-                    <td>${doc.data().nome}</td>
-                    <td>
-                        <select class="status-input" data-id="${doc.id}">
-                            <option value="P">Presente</option>
-                            <option value="F">Falta Não Justificada</option>
-                            <option value="J">Falta Justificada</option>
-                        </select>
-                    </td>
-                </tr>`;
+            inputChamada.innerHTML += `<tr><td>${doc.data().nome}</td><td>
+                <select class="status-input" data-id="${doc.id}" style="padding:5px;">
+                    <option value="P">Pres.</option><option value="F">Falta</option><option value="J">Just.</option>
+                </select>
+            </td></tr>`;
         });
 
         let ranking = [];
@@ -448,59 +437,30 @@
             let p=0, j=0, f=0;
             aulasSnap.forEach(aDoc => {
                 const a = aDoc.data();
-                if(a.presentes && a.presentes.includes(doc.id)) p++;
-                else if(a.justificadas && a.justificadas.includes(doc.id)) j++;
+                if(a.presentes?.includes(doc.id)) p++;
+                else if(a.justificadas?.includes(doc.id)) j++;
                 else f++;
             });
             ranking.push({nome: doc.data().nome, p, j, f});
         });
-        
-        ranking.sort((a,b) => b.f - a.f); 
-        
-        rankingBody.innerHTML = ranking.map(r => `
-            <tr>
-                <td><strong>${r.nome}</strong></td>
-                <td><span class="badge bg-presenca">${r.p}</span></td>
-                <td><span class="badge bg-justificada">${r.j}</span></td>
-                <td><span class="badge bg-falta">${r.f}</span></td>
-            </tr>`).join('');
+        ranking.sort((a,b) => b.f - a.f);
+        rankingBody.innerHTML = ranking.map(r => `<tr><td><strong>${r.nome}</strong></td><td><span class="badge bg-presenca">${r.p}</span></td><td><span class="badge bg-justificada">${r.j}</span></td><td><span class="badge bg-falta">${r.f}</span></td></tr>`).join('');
 
         diasContainer.innerHTML = '';
         aulasSnap.forEach(doc => {
             const a = doc.data();
             const aulaId = doc.id;
+            let botoes = auth.currentUser ? `<div><button class="btn-edit btn-small" onclick="iniciarEdicaoAula('${aulaId}', '${a.tema}')">Editar</button><button class="btn-danger btn-small" onclick="excluirAula('${aulaId}')">X</button></div>` : '';
             
-            const presNomes = membrosSnap.docs.filter(m => a.presentes && a.presentes.includes(m.id)).map(m => m.data().nome).join(', ');
-            const justNomes = membrosSnap.docs.filter(m => a.justificadas && a.justificadas.includes(m.id)).map(m => m.data().nome).join(', ');
-            const faltNomes = membrosSnap.docs.filter(m => (!a.presentes || !a.presentes.includes(m.id)) && (!a.justificadas || !a.justificadas.includes(m.id))).map(m => m.data().nome).join(', ');
-
-            let botoesAdmin = '';
-            if(auth.currentUser) {
-                botoesAdmin = `
-                    <div>
-                        <button class="btn-edit btn-small" onclick="iniciarEdicaoAula('${aulaId}', '${a.tema}')"><i class="fa-solid fa-pen"></i> Editar</button>
-                        <button class="btn-danger btn-small" onclick="excluirAula('${aulaId}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>`;
-            }
-
-            const strPresentes = JSON.stringify(a.presentes || []);
-            const strJustificadas = JSON.stringify(a.justificadas || []);
-
             diasContainer.innerHTML += `
-                <div class="day-item" id="aula-item-${aulaId}" data-pres='${strPresentes}' data-just='${strJustificadas}'>
+                <div class="day-item" id="aula-item-${aulaId}" data-pres='${JSON.stringify(a.presentes || [])}' data-just='${JSON.stringify(a.justificadas || [])}'>
                     <div class="day-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span>📅 ${a.dataCadastro} - <strong>${a.tema}</strong></span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            ${botoesAdmin}
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
+                        <span>📅 ${a.dataCadastro} - <strong>${a.tema}</strong></span>
+                        <div style="display:flex; align-items:center; gap:10px;">${botoes} <i class="fa-solid fa-chevron-down"></i></div>
                     </div>
                     <div class="day-content">
-                        <p style="color:var(--success)"><strong>Presentes:</strong> ${presNomes || 'Nenhum'}</p>
-                        <p style="color:var(--warning)"><strong>Faltas Justificadas:</strong> ${justNomes || 'Nenhuma'}</p>
-                        <p style="color:var(--danger)"><strong>Faltas Não Justificadas:</strong> ${faltNomes || 'Nenhuma'}</p>
+                        <p><strong>Presentes:</strong> ${membrosSnap.docs.filter(m => a.presentes?.includes(m.id)).map(m => m.data().nome).join(', ') || 'Ninguém'}</p>
+                        <p><strong>Justificadas:</strong> ${membrosSnap.docs.filter(m => a.justificadas?.includes(m.id)).map(m => m.data().nome).join(', ') || 'Nenhuma'}</p>
                     </div>
                 </div>`;
         });
@@ -508,352 +468,105 @@
 
     async function salvarAula() {
         const tema = document.getElementById('aula-tema').value;
-        if(!tema) return alert("Digite o tema da aula!");
-
+        if(!tema) return alert("Digite o tema!");
         const inputs = document.querySelectorAll('.status-input');
         let presentes = [], justificadas = [];
-        
         inputs.forEach(i => {
             if(i.value === 'P') presentes.push(i.dataset.id);
             if(i.value === 'J') justificadas.push(i.dataset.id);
         });
-
-        if(idAulaEditando) {
-            await db.collection("aulas").doc(idAulaEditando).update({ tema, presentes, justificadas });
-            alert("Chamada atualizada com sucesso!");
-            cancelarEdicaoAula();
-        } else {
-            await db.collection("aulas").add({ 
-                tema, presentes, justificadas, 
-                dataCadastro: new Date().toLocaleDateString(), 
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-            });
-            alert("Chamada salva com sucesso!"); 
-            document.getElementById('aula-tema').value = '';
-        }
-        
-        carregarDadosFrequencia();
+        if(idAulaEditando) await db.collection("aulas").doc(idAulaEditando).update({ tema, presentes, justificadas });
+        else await db.collection("aulas").add({ tema, presentes, justificadas, dataCadastro: new Date().toLocaleDateString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Chamada Registrada!"); cancelarEdicaoAula(); carregarDadosFrequencia();
     }
 
-    function iniciarEdicaoAula(id, temaAtual) {
+    function iniciarEdicaoAula(id, tema) {
         idAulaEditando = id;
-        const divAula = document.getElementById(`aula-item-${id}`);
-        const presentes = JSON.parse(divAula.getAttribute('data-pres'));
-        const justificadas = JSON.parse(divAula.getAttribute('data-just'));
-
-        const painel = document.getElementById('panel-chamada');
-        painel.classList.add('edit-mode-bg');
-        document.getElementById('titulo-painel-chamada').innerText = "✏️ Editando Chamada";
-        document.getElementById('aula-tema').value = temaAtual;
-        document.getElementById('btn-salvar-chamada').innerText = "Salvar Alterações";
-        document.getElementById('btn-cancelar-edicao').style.display = "inline-block";
-
-        const inputs = document.querySelectorAll('.status-input');
-        inputs.forEach(i => {
-            const mId = i.dataset.id;
-            if(presentes.includes(mId)) i.value = 'P';
-            else if(justificadas.includes(mId)) i.value = 'J';
+        const div = document.getElementById(`aula-item-${id}`);
+        const p = JSON.parse(div.dataset.pres);
+        const j = JSON.parse(div.dataset.just);
+        document.getElementById('aula-tema').value = tema;
+        document.getElementById('titulo-painel-chamada').innerText = "Editando Chamada";
+        document.getElementById('btn-cancelar-edicao').style.display = "block";
+        document.querySelectorAll('.status-input').forEach(i => {
+            if(p.includes(i.dataset.id)) i.value = 'P';
+            else if(j.includes(i.dataset.id)) i.value = 'J';
             else i.value = 'F';
         });
-
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function cancelarEdicaoAula() {
-        idAulaEditando = null;
-        const painel = document.getElementById('panel-chamada');
-        painel.classList.remove('edit-mode-bg');
-        document.getElementById('titulo-painel-chamada').innerText = "Nova Chamada";
-        document.getElementById('aula-tema').value = "";
-        document.getElementById('btn-salvar-chamada').innerText = "Finalizar e Salvar Chamada";
-        document.getElementById('btn-cancelar-edicao').style.display = "none";
-        
-        const inputs = document.querySelectorAll('.status-input');
-        inputs.forEach(i => i.value = 'P');
-    }
+    function cancelarEdicaoAula() { idAulaEditando = null; document.getElementById('aula-tema').value = ""; document.getElementById('btn-cancelar-edicao').style.display = "none"; document.getElementById('titulo-painel-chamada').innerText = "Nova Chamada"; }
+    async function excluirAula(id) { if(confirm("Excluir chamada?")) { await db.collection("aulas").doc(id).delete(); carregarDadosFrequencia(); } }
 
-    async function excluirAula(id) {
-        if(confirm("ATENÇÃO: Deseja realmente excluir permanentemente a chamada desta aula?")) {
-            await db.collection("aulas").doc(id).delete();
-            carregarDadosFrequencia();
-        }
-    }
-
-    // --- ATAS ---
+    // --- ATAS / BIBLIOTECA ---
     async function salvarAta() {
         const titulo = document.getElementById('ata-titulo').value;
-        const dataInput = document.getElementById('ata-data').value;
+        const data = document.getElementById('ata-data').value.split('-').reverse().join('/');
         const url = document.getElementById('ata-link').value;
-        
-        if(!titulo || !url || !dataInput) return alert("Preencha o título, a DATA e o link da Ata.");
-        
-        const dataFormatada = dataInput.split('-').reverse().join('/');
-
-        await db.collection("atas").add({ 
-            titulo, url, 
-            data: dataFormatada, 
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-        });
-        
-        alert("Ata publicada!");
-        document.getElementById('ata-titulo').value = '';
-        document.getElementById('ata-data').value = '';
-        document.getElementById('ata-link').value = '';
-        carregarAtas();
+        await db.collection("atas").add({ titulo, url, data, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Ata Salva!"); carregarAtas();
     }
-
     function carregarAtas() {
         db.collection("atas").orderBy("timestamp", "desc").get().then(snap => {
-            document.getElementById('atas-list').innerHTML = snap.docs.map(doc => {
-                const btnExcluir = auth.currentUser ? `<button class="btn-danger btn-small" onclick="excluirAta('${doc.id}')">Excluir</button>` : '';
-                return `
-                <div class="material-item">
-                    <span><strong>${doc.data().data}</strong> - ${doc.data().titulo}</span>
-                    <div>
-                        <a href="${doc.data().url}" target="_blank" class="btn-gold" style="text-decoration:none; padding:8px 15px; display:inline-block;">Acessar PDF</a>
-                        ${btnExcluir}
-                    </div>
-                </div>`;
-            }).join('');
+            document.getElementById('atas-list').innerHTML = snap.docs.map(doc => `<div class="material-item"><span><strong>${doc.data().data}</strong> - ${doc.data().titulo}</span><a href="${doc.data().url}" target="_blank" class="btn-gold">Abrir</a></div>`).join('');
         });
     }
 
-    async function excluirAta(id) {
-        if(confirm("Excluir esta ata?")) {
-            await db.collection("atas").doc(id).delete();
-            carregarAtas();
-        }
-    }
-
-    // --- BIBLIOTECA ---
     async function salvarBib() {
         const titulo = document.getElementById('bib-titulo').value;
         const categoria = document.getElementById('bib-cat').value;
         const url = document.getElementById('bib-link').value;
-        
-        if(!titulo || !categoria || !url) return alert("Preencha todos os campos.");
-
-        await db.collection("biblioteca").add({ 
-            titulo, 
-            categoria: categoria.charAt(0).toUpperCase() + categoria.slice(1), 
-            url, 
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-        });
-        alert("Material salvo!");
-        document.getElementById('bib-titulo').value = '';
-        document.getElementById('bib-cat').value = '';
-        document.getElementById('bib-link').value = '';
-        carregarBiblioteca();
+        await db.collection("biblioteca").add({ titulo, categoria, url, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Salvo!"); carregarBiblioteca();
     }
-
     function carregarBiblioteca() {
-        db.collection("biblioteca").orderBy("timestamp", "desc").get().then(snap => {
+        db.collection("biblioteca").get().then(snap => {
             const groups = {};
             snap.forEach(doc => {
                 const b = doc.data();
                 if(!groups[b.categoria]) groups[b.categoria] = [];
-                groups[b.categoria].push({id: doc.id, ...b});
+                groups[b.categoria].push(b);
             });
-            
-            document.getElementById('bib-list').innerHTML = Object.keys(groups).map(cat => `
-                <div class="category-block">
-                    <h3>📁 ${cat}</h3>` + 
-                    groups[cat].map(i => {
-                        const btnExcluir = auth.currentUser ? `<button class="btn-danger btn-small" onclick="excluirBib('${i.id}')">Excluir</button>` : '';
-                        return `
-                        <div class="material-item">
-                            <span>${i.titulo}</span>
-                            <div>
-                                <a href="${i.url}" target="_blank" class="btn-gold" style="text-decoration:none; padding:8px 15px; display:inline-block;">Acessar</a>
-                                ${btnExcluir}
-                            </div>
-                        </div>`;
-                    }).join('') + 
-                `</div>`).join('');
+            document.getElementById('bib-list').innerHTML = Object.keys(groups).map(cat => `<div class="category-block"><h3>📁 ${cat}</h3>` + groups[cat].map(i => `<div class="material-item"><span>${i.titulo}</span><a href="${i.url}" target="_blank" class="btn-gold">Link</a></div>`).join('') + `</div>`).join('');
         });
-    }
-
-    async function excluirBib(id) {
-        if(confirm("Excluir material?")) {
-            await db.collection("biblioteca").doc(id).delete();
-            carregarBiblioteca();
-        }
     }
 
     // --- PLANTÕES ---
     async function salvarPlantao() {
         const mSelect = document.getElementById('p-membro');
-        const mId = mSelect.value;
-        const mNome = mSelect.options[mSelect.selectedIndex].text;
-        const mesInput = document.getElementById('p-mes').value; 
+        const mesInput = document.getElementById('p-mes').value;
         const qtd = document.getElementById('p-qtd').value;
-
-        if(!mId || !mesInput || !qtd) return alert("Preencha o Membro, o Mês e a Quantidade.");
-
-        const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        const partesData = mesInput.split('-');
-        const nomeMes = mesesNomes[parseInt(partesData[1]) - 1] + " " + partesData[0];
-
-        await db.collection("plantoes").add({
-            membroId: mId,
-            membroNome: mNome,
-            mesReferencia: mesInput, 
-            mesExibicao: nomeMes,
-            quantidade: parseInt(qtd),
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        alert("Plantões registrados com sucesso!");
-        document.getElementById('p-membro').value = '';
-        document.getElementById('p-qtd').value = '';
-        carregarPlantoes();
+        await db.collection("plantoes").add({ membroNome: mSelect.options[mSelect.selectedIndex].text, mesReferencia: mesInput, quantidade: qtd, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Plantão Salvo!"); carregarPlantoes();
     }
-
     function carregarPlantoes() {
-        const mSelect = document.getElementById('p-membro');
         db.collection("membros").orderBy("nome").get().then(snap => {
-            mSelect.innerHTML = '<option value="">Selecione o Membro...</option>';
-            snap.forEach(doc => {
-                mSelect.innerHTML += `<option value="${doc.id}">${doc.data().nome}</option>`;
-            });
+            document.getElementById('p-membro').innerHTML = snap.docs.map(doc => `<option value="${doc.id}">${doc.data().nome}</option>`).join('');
         });
-
         db.collection("plantoes").orderBy("mesReferencia", "desc").get().then(snap => {
-            const listContainer = document.getElementById('plantoes-list');
-            if(snap.empty) {
-                listContainer.innerHTML = '<p>Nenhum plantão registrado ainda.</p>';
-                return;
-            }
-
-            const plantoesPorMes = {};
-            snap.forEach(doc => {
-                const p = doc.data();
-                if(!plantoesPorMes[p.mesExibicao]) plantoesPorMes[p.mesExibicao] = [];
-                plantoesPorMes[p.mesExibicao].push({id: doc.id, ...p});
-            });
-
-            listContainer.innerHTML = '';
-            for(let mes in plantoesPorMes) {
-                let htmlMes = `
-                <div class="category-block">
-                    <h3>🏥 Plantões - ${mes}</h3>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead><tr><th>Membro</th><th>Plantões Realizados</th><th>Ações</th></tr></thead>
-                            <tbody>
-                `;
-                
-                plantoesPorMes[mes].forEach(p => {
-                    const btnExcluir = auth.currentUser ? `<button class="btn-danger btn-small" onclick="excluirPlantao('${p.id}')">Excluir</button>` : '';
-                    htmlMes += `
-                        <tr>
-                            <td><strong>${p.membroNome}</strong></td>
-                            <td><span class="badge bg-presenca" style="font-size: 0.9rem;">${p.quantidade}</span></td>
-                            <td>${btnExcluir}</td>
-                        </tr>
-                    `;
-                });
-
-                htmlMes += `</tbody></table></div></div>`;
-                listContainer.innerHTML += htmlMes;
-            }
+            document.getElementById('plantoes-list').innerHTML = snap.docs.map(doc => `<div class="material-item"><span><strong>${doc.data().membroNome}</strong> (${doc.data().mesReferencia})</span><span class="badge bg-presenca">${doc.data().quantidade} plantões</span></div>`).join('');
         });
     }
 
-    async function excluirPlantao(id) {
-        if(confirm("Excluir este registro de plantões?")) {
-            await db.collection("plantoes").doc(id).delete();
-            carregarPlantoes();
-        }
-    }
-
-    // --- GESTÃO DE MEMBROS (NOVA LÓGICA DE EDIÇÃO COMPLETA) ---
+    // --- GESTÃO DE MEMBROS ---
     async function salvarFormularioMembro() {
-        const nome = document.getElementById('m-nome').value;
-        const matricula = document.getElementById('m-mat').value;
-        const semestre = document.getElementById('m-sem').value;
-        const modalidade = document.getElementById('m-mod').value;
-        
-        if(!nome || !matricula) return alert("Preencha no mínimo Nome e Matrícula.");
-        
-        if(idMembroEditando) {
-            await db.collection("membros").doc(idMembroEditando).update({ 
-                nome, matricula, semestre: semestre || "N/A", modalidade 
-            });
-            alert("Membro atualizado com sucesso!");
-            cancelarEdicaoMembro();
-        } else {
-            await db.collection("membros").add({ 
-                nome, matricula, semestre: semestre || "N/A", modalidade 
-            });
-            alert("Membro Cadastrado!");
-            document.getElementById('m-nome').value = '';
-            document.getElementById('m-mat').value = '';
-            document.getElementById('m-sem').value = '';
-        }
-        
-        carregarMembrosAdmin();
+        const nome = document.getElementById('m-nome').value, mat = document.getElementById('m-mat').value, sem = document.getElementById('m-sem').value, mod = document.getElementById('m-mod').value;
+        if(idMembroEditando) await db.collection("membros").doc(idMembroEditando).update({ nome, matricula: mat, semestre: sem, modalidade: mod });
+        else await db.collection("membros").add({ nome, matricula: mat, semestre: sem, modalidade: mod });
+        alert("OK!"); cancelarEdicaoMembro(); carregarMembrosAdmin();
     }
-
-    function iniciarEdicaoMembro(id, nome, mat, sem, mod) {
-        idMembroEditando = id;
-        
-        document.getElementById('titulo-painel-membro').innerHTML = "✏️ Editando Membro";
-        document.getElementById('panel-membro').classList.add('edit-mode-bg');
-        
-        document.getElementById('m-nome').value = nome;
-        document.getElementById('m-mat').value = mat;
-        document.getElementById('m-sem').value = (sem !== 'undefined' && sem !== 'N/A') ? sem : '';
-        document.getElementById('m-mod').value = mod;
-        
-        document.getElementById('btn-salvar-membro').innerText = "Salvar Alterações";
-        document.getElementById('btn-cancelar-membro').style.display = "inline-block";
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function cancelarEdicaoMembro() {
-        idMembroEditando = null;
-        
-        document.getElementById('titulo-painel-membro').innerHTML = "Cadastrar Novo Membro";
-        document.getElementById('panel-membro').classList.remove('edit-mode-bg');
-        
-        document.getElementById('m-nome').value = '';
-        document.getElementById('m-mat').value = '';
-        document.getElementById('m-sem').value = '';
-        document.getElementById('m-mod').value = 'Estágio + Liga';
-        
-        document.getElementById('btn-salvar-membro').innerText = "Cadastrar Membro";
-        document.getElementById('btn-cancelar-membro').style.display = "none";
-    }
-
+    function iniciarEdicaoMembro(id, n, m, s, mo) { idMembroEditando = id; document.getElementById('m-nome').value = n; document.getElementById('m-mat').value = m; document.getElementById('m-sem').value = s; document.getElementById('m-mod').value = mo; document.getElementById('btn-cancelar-membro').style.display = "block"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function cancelarEdicaoMembro() { idMembroEditando = null; document.getElementById('btn-cancelar-membro').style.display = "none"; document.querySelectorAll('#panel-membro input').forEach(i => i.value = ""); }
     function carregarMembrosAdmin() {
         db.collection("membros").orderBy("nome").get().then(snap => {
             document.getElementById('tbody-membros-list').innerHTML = snap.docs.map(doc => {
                 const m = doc.data();
-                return `
-                <tr>
-                    <td>${m.nome}</td>
-                    <td>${m.matricula}</td>
-                    <td>${m.semestre || 'N/A'}</td>
-                    <td><span class="badge ${m.modalidade === 'Só Liga' ? 'bg-gold' : 'bg-presenca'}">${m.modalidade}</span></td>
-                    <td>
-                        <button class="btn-edit btn-small" onclick="iniciarEdicaoMembro('${doc.id}', '${m.nome}', '${m.matricula}', '${m.semestre}', '${m.modalidade}')"><i class="fa-solid fa-pen"></i> Editar</button>
-                        <button class="btn-danger btn-small" onclick="excluirMembro('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
+                return `<tr><td>${m.nome}</td><td>${m.matricula}</td><td>${m.semestre}</td><td>${m.modalidade}</td><td><button class="btn-edit btn-small" onclick="iniciarEdicaoMembro('${doc.id}','${m.nome}','${m.matricula}','${m.semestre}','${m.modalidade}')">Edit</button></td></tr>`;
             }).join('');
         });
     }
 
-    async function excluirMembro(id) { 
-        if(confirm("Deseja realmente excluir este membro do banco de dados?")) { 
-            await db.collection("membros").doc(id).delete(); 
-            carregarMembrosAdmin(); 
-        } 
-    }
-
-    // Inicia a aplicação
     window.onload = () => showSlide('freq');
 </script>
 </body>

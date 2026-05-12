@@ -37,7 +37,7 @@
             color: var(--text-main);
         }
 
-        /* NAVEGAÇÃO */
+        /* NAVEGAÇÃO E LOGO */
         nav {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             color: var(--white);
@@ -54,6 +54,17 @@
         }
 
         .brand { display: flex; align-items: center; gap: 15px; }
+        
+        .brand img {
+            height: 60px;
+            width: 60px;
+            object-fit: contain;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
         .brand-text h1 { margin: 0; font-family: 'Merriweather', serif; font-size: 1.2rem; letter-spacing: 1px; }
 
         .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -72,7 +83,7 @@
         .nav-links button:hover { color: var(--accent-light); background: rgba(255,255,255,0.1); }
         .nav-links button.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
 
-        /* LAYOUT PRINCIPAL */
+        /* LAYOUT PRINCIPAL E MARCA D'ÁGUA */
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
         .slide-card {
@@ -84,7 +95,29 @@
             animation: slideUp 0.5s ease-out;
             min-height: 500px;
             border-top: 5px solid var(--primary);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
         }
+        
+        /* MARCA D'ÁGUA DA LOGO NO FUNDO */
+        .slide-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background-image: url('logo.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.03; /* Transparência bem suave */
+            z-index: -1;
+            pointer-events: none;
+        }
+
         .slide-card.active { display: block; }
 
         @keyframes slideUp {
@@ -124,7 +157,7 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         /* TABELAS E BADGES */
-        .table-wrapper { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .table-wrapper { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: var(--white); }
         table { width: 100%; border-collapse: collapse; }
         th { background: var(--primary); color: var(--white); padding: 15px; text-align: left; font-size: 0.9rem; }
         td { padding: 15px; border-bottom: 1px solid #edf2f7; }
@@ -154,13 +187,13 @@
         .btn-edit { background: var(--warning); color: white; border: none; border-radius: 4px; cursor: pointer; }
 
         /* ACORDEON DE DIAS */
-        .day-item { border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; }
-        .day-header { background: #f8fafc; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .day-item { border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; background: var(--white); }
+        .day-header { background: #f8fafc; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; border-radius: 8px;}
         .day-header:hover { background: #edf2f7; }
         .day-content { display: none; padding: 20px; border-top: 1px solid #e2e8f0; }
         
         /* BLOCOS DE MATERIAIS / ATAS */
-        .material-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e2e8f0; }
+        .material-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e2e8f0; background: var(--white); }
         .category-block { margin-bottom: 30px; }
         .category-block h3 { color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         
@@ -172,6 +205,7 @@
 
 <nav>
     <div class="brand">
+        <img src="logo.jpg" alt="Logo LIANCI" onerror="this.src='https://via.placeholder.com/60/004d40/b2945d?text=LIANCI'">
         <div class="brand-text">
             <h1>PORTAL LIANCI</h1>
             <small style="color: var(--accent-light);">Secretaria Acadêmica</small>
@@ -289,8 +323,8 @@
     <section id="slide-adm" class="slide-card">
         <h2 class="section-header"><i class="fa-solid fa-users"></i> Gestão de Membros</h2>
         
-        <div class="admin-panel">
-            <h3>Cadastrar Novo Membro</h3>
+        <div id="panel-membro" class="admin-panel">
+            <h3 id="titulo-painel-membro">Cadastrar Novo Membro</h3>
             <div class="grid-2">
                 <input type="text" id="m-nome" placeholder="Nome Completo">
                 <input type="text" id="m-mat" placeholder="Matrícula">
@@ -300,7 +334,8 @@
                     <option value="Só Liga">Só Liga</option>
                 </select>
             </div>
-            <button class="btn-gold" onclick="cadastrarMembro()">Cadastrar Membro</button>
+            <button id="btn-salvar-membro" class="btn-gold" onclick="salvarFormularioMembro()">Cadastrar Membro</button>
+            <button id="btn-cancelar-membro" class="btn-gold" style="display:none; background: #a0aec0; margin-left: 10px;" onclick="cancelarEdicaoMembro()">Cancelar</button>
         </div>
         
         <div class="table-wrapper">
@@ -332,7 +367,8 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let idAulaEditando = null; // Variável global para saber se estamos editando uma aula
+    let idAulaEditando = null;
+    let idMembroEditando = null;
 
     // --- CONTROLE DE TELAS ---
     function showSlide(id) {
@@ -363,12 +399,12 @@
             btn.innerText = "Sair do Sistema";
             navAdm.style.display = "block";
             adminElements.forEach(el => el.style.display = "block");
-            carregarDadosFrequencia(); // Recarrega para mostrar botões de edição
+            carregarDadosFrequencia();
         } else {
             btn.innerText = "Login Sec.";
             navAdm.style.display = "none";
             adminElements.forEach(el => el.style.display = "none");
-            carregarDadosFrequencia(); // Recarrega para esconder botões
+            carregarDadosFrequencia();
         }
     });
 
@@ -392,7 +428,6 @@
         const membrosSnap = await db.collection("membros").orderBy("nome").get();
         const aulasSnap = await db.collection("aulas").orderBy("timestamp", "desc").get();
 
-        // 1. Renderiza formulário de chamada
         inputChamada.innerHTML = '';
         membrosSnap.forEach(doc => {
             inputChamada.innerHTML += `
@@ -408,7 +443,6 @@
                 </tr>`;
         });
 
-        // 2. Renderiza Ranking
         let ranking = [];
         membrosSnap.forEach(doc => {
             let p=0, j=0, f=0;
@@ -431,7 +465,6 @@
                 <td><span class="badge bg-falta">${r.f}</span></td>
             </tr>`).join('');
 
-        // 3. Renderiza Histórico por Dias
         diasContainer.innerHTML = '';
         aulasSnap.forEach(doc => {
             const a = doc.data();
@@ -441,7 +474,6 @@
             const justNomes = membrosSnap.docs.filter(m => a.justificadas && a.justificadas.includes(m.id)).map(m => m.data().nome).join(', ');
             const faltNomes = membrosSnap.docs.filter(m => (!a.presentes || !a.presentes.includes(m.id)) && (!a.justificadas || !a.justificadas.includes(m.id))).map(m => m.data().nome).join(', ');
 
-            // Botões de Admin para Aulas
             let botoesAdmin = '';
             if(auth.currentUser) {
                 botoesAdmin = `
@@ -451,7 +483,6 @@
                     </div>`;
             }
 
-            // String das arrays para facilitar a edição
             const strPresentes = JSON.stringify(a.presentes || []);
             const strJustificadas = JSON.stringify(a.justificadas || []);
 
@@ -487,22 +518,16 @@
             if(i.value === 'J') justificadas.push(i.dataset.id);
         });
 
-        const dadosAula = {
-            tema, presentes, justificadas, 
-            dataCadastro: new Date().toLocaleDateString(), 
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-        };
-
         if(idAulaEditando) {
-            // Atualizar aula existente
-            await db.collection("aulas").doc(idAulaEditando).update({
-                tema, presentes, justificadas
-            });
+            await db.collection("aulas").doc(idAulaEditando).update({ tema, presentes, justificadas });
             alert("Chamada atualizada com sucesso!");
             cancelarEdicaoAula();
         } else {
-            // Criar nova aula
-            await db.collection("aulas").add(dadosAula);
+            await db.collection("aulas").add({ 
+                tema, presentes, justificadas, 
+                dataCadastro: new Date().toLocaleDateString(), 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
             alert("Chamada salva com sucesso!"); 
             document.getElementById('aula-tema').value = '';
         }
@@ -512,13 +537,10 @@
 
     function iniciarEdicaoAula(id, temaAtual) {
         idAulaEditando = id;
-        
-        // Pega as arrays escondidas no HTML
         const divAula = document.getElementById(`aula-item-${id}`);
         const presentes = JSON.parse(divAula.getAttribute('data-pres'));
         const justificadas = JSON.parse(divAula.getAttribute('data-just'));
 
-        // Preenche o painel
         const painel = document.getElementById('panel-chamada');
         painel.classList.add('edit-mode-bg');
         document.getElementById('titulo-painel-chamada').innerText = "✏️ Editando Chamada";
@@ -526,7 +548,6 @@
         document.getElementById('btn-salvar-chamada').innerText = "Salvar Alterações";
         document.getElementById('btn-cancelar-edicao').style.display = "inline-block";
 
-        // Ajusta as caixinhas P, F, J de cada membro
         const inputs = document.querySelectorAll('.status-input');
         inputs.forEach(i => {
             const mId = i.dataset.id;
@@ -535,7 +556,6 @@
             else i.value = 'F';
         });
 
-        // Sobe a tela para o topo
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -548,13 +568,12 @@
         document.getElementById('btn-salvar-chamada').innerText = "Finalizar e Salvar Chamada";
         document.getElementById('btn-cancelar-edicao').style.display = "none";
         
-        // Reseta todos para Presente (Padrão)
         const inputs = document.querySelectorAll('.status-input');
         inputs.forEach(i => i.value = 'P');
     }
 
     async function excluirAula(id) {
-        if(confirm("ATENÇÃO: Deseja realmente excluir permanentemente a chamada desta aula? As faltas e presenças vinculadas a ela serão apagadas.")) {
+        if(confirm("ATENÇÃO: Deseja realmente excluir permanentemente a chamada desta aula?")) {
             await db.collection("aulas").doc(id).delete();
             carregarDadosFrequencia();
         }
@@ -568,7 +587,6 @@
         
         if(!titulo || !url || !dataInput) return alert("Preencha o título, a DATA e o link da Ata.");
         
-        // Formatar a data (YYYY-MM-DD para DD/MM/YYYY)
         const dataFormatada = dataInput.split('-').reverse().join('/');
 
         await db.collection("atas").add({ 
@@ -662,17 +680,16 @@
         }
     }
 
-    // --- PLANTÕES (NOVA ABA) ---
+    // --- PLANTÕES ---
     async function salvarPlantao() {
         const mSelect = document.getElementById('p-membro');
         const mId = mSelect.value;
         const mNome = mSelect.options[mSelect.selectedIndex].text;
-        const mesInput = document.getElementById('p-mes').value; // Retorna YYYY-MM
+        const mesInput = document.getElementById('p-mes').value; 
         const qtd = document.getElementById('p-qtd').value;
 
         if(!mId || !mesInput || !qtd) return alert("Preencha o Membro, o Mês e a Quantidade.");
 
-        // Transforma '2026-05' em 'Maio 2026'
         const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         const partesData = mesInput.split('-');
         const nomeMes = mesesNomes[parseInt(partesData[1]) - 1] + " " + partesData[0];
@@ -680,7 +697,7 @@
         await db.collection("plantoes").add({
             membroId: mId,
             membroNome: mNome,
-            mesReferencia: mesInput, // YYYY-MM para ordenar no banco
+            mesReferencia: mesInput, 
             mesExibicao: nomeMes,
             quantidade: parseInt(qtd),
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -693,7 +710,6 @@
     }
 
     function carregarPlantoes() {
-        // Preenche o Select de Membros
         const mSelect = document.getElementById('p-membro');
         db.collection("membros").orderBy("nome").get().then(snap => {
             mSelect.innerHTML = '<option value="">Selecione o Membro...</option>';
@@ -702,7 +718,6 @@
             });
         });
 
-        // Traz os plantões do banco, ordenados pelo mês mais recente
         db.collection("plantoes").orderBy("mesReferencia", "desc").get().then(snap => {
             const listContainer = document.getElementById('plantoes-list');
             if(snap.empty) {
@@ -752,8 +767,8 @@
         }
     }
 
-    // --- GESTÃO DE MEMBROS ---
-    async function cadastrarMembro() {
+    // --- GESTÃO DE MEMBROS (NOVA LÓGICA DE EDIÇÃO COMPLETA) ---
+    async function salvarFormularioMembro() {
         const nome = document.getElementById('m-nome').value;
         const matricula = document.getElementById('m-mat').value;
         const semestre = document.getElementById('m-sem').value;
@@ -761,52 +776,74 @@
         
         if(!nome || !matricula) return alert("Preencha no mínimo Nome e Matrícula.");
         
-        await db.collection("membros").add({ nome, matricula, semestre: semestre || "N/A", modalidade });
-        alert("Membro Cadastrado!");
+        if(idMembroEditando) {
+            await db.collection("membros").doc(idMembroEditando).update({ 
+                nome, matricula, semestre: semestre || "N/A", modalidade 
+            });
+            alert("Membro atualizado com sucesso!");
+            cancelarEdicaoMembro();
+        } else {
+            await db.collection("membros").add({ 
+                nome, matricula, semestre: semestre || "N/A", modalidade 
+            });
+            alert("Membro Cadastrado!");
+            document.getElementById('m-nome').value = '';
+            document.getElementById('m-mat').value = '';
+            document.getElementById('m-sem').value = '';
+        }
+        
+        carregarMembrosAdmin();
+    }
+
+    function iniciarEdicaoMembro(id, nome, mat, sem, mod) {
+        idMembroEditando = id;
+        
+        document.getElementById('titulo-painel-membro').innerHTML = "✏️ Editando Membro";
+        document.getElementById('panel-membro').classList.add('edit-mode-bg');
+        
+        document.getElementById('m-nome').value = nome;
+        document.getElementById('m-mat').value = mat;
+        document.getElementById('m-sem').value = (sem !== 'undefined' && sem !== 'N/A') ? sem : '';
+        document.getElementById('m-mod').value = mod;
+        
+        document.getElementById('btn-salvar-membro').innerText = "Salvar Alterações";
+        document.getElementById('btn-cancelar-membro').style.display = "inline-block";
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoMembro() {
+        idMembroEditando = null;
+        
+        document.getElementById('titulo-painel-membro').innerHTML = "Cadastrar Novo Membro";
+        document.getElementById('panel-membro').classList.remove('edit-mode-bg');
         
         document.getElementById('m-nome').value = '';
         document.getElementById('m-mat').value = '';
         document.getElementById('m-sem').value = '';
+        document.getElementById('m-mod').value = 'Estágio + Liga';
         
-        carregarMembrosAdmin();
+        document.getElementById('btn-salvar-membro').innerText = "Cadastrar Membro";
+        document.getElementById('btn-cancelar-membro').style.display = "none";
     }
 
     function carregarMembrosAdmin() {
         db.collection("membros").orderBy("nome").get().then(snap => {
-            document.getElementById('tbody-membros-list').innerHTML = snap.docs.map(doc => `
+            document.getElementById('tbody-membros-list').innerHTML = snap.docs.map(doc => {
+                const m = doc.data();
+                return `
                 <tr>
-                    <td>${doc.data().nome}</td>
-                    <td>${doc.data().matricula}</td>
-                    <td>${doc.data().semestre || 'N/A'}</td>
-                    <td><span class="badge ${doc.data().modalidade === 'Só Liga' ? 'bg-gold' : 'bg-presenca'}">${doc.data().modalidade}</span></td>
+                    <td>${m.nome}</td>
+                    <td>${m.matricula}</td>
+                    <td>${m.semestre || 'N/A'}</td>
+                    <td><span class="badge ${m.modalidade === 'Só Liga' ? 'bg-gold' : 'bg-presenca'}">${m.modalidade}</span></td>
                     <td>
-                        <button class="btn-edit btn-small" onclick="editarDadosMembro('${doc.id}', '${doc.data().semestre}', '${doc.data().modalidade}')"><i class="fa-solid fa-pen"></i> Editar</button>
+                        <button class="btn-edit btn-small" onclick="iniciarEdicaoMembro('${doc.id}', '${m.nome}', '${m.matricula}', '${m.semestre}', '${m.modalidade}')"><i class="fa-solid fa-pen"></i> Editar</button>
                         <button class="btn-danger btn-small" onclick="excluirMembro('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
                     </td>
-                </tr>`).join('');
+                </tr>`;
+            }).join('');
         });
-    }
-
-    async function editarDadosMembro(id, semAtual, modAtual) {
-        const novoSemestre = prompt("Atualizar Semestre (Ex: 5º Semestre):", semAtual !== 'undefined' ? semAtual : '');
-        if(novoSemestre === null) return; // Cancelou
-        
-        const mudarMod = confirm(`A modalidade atual é [${modAtual}].\nDeseja alterar a modalidade?\n\nOK = Sim, alterar.\nCancelar = Manter a mesma.`);
-        let novaModalidade = modAtual;
-        
-        if(mudarMod) {
-            if(modAtual === "Só Liga") novaModalidade = "Estágio + Liga";
-            else novaModalidade = "Só Liga";
-            alert("A modalidade será alterada para: " + novaModalidade);
-        }
-
-        await db.collection("membros").doc(id).update({
-            semestre: novoSemestre,
-            modalidade: novaModalidade
-        });
-
-        alert("Dados do membro atualizados!");
-        carregarMembrosAdmin();
     }
 
     async function excluirMembro(id) { 

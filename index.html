@@ -4,538 +4,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Liga de Cirurgia</title>
-    <!-- Bibliotecas do Firebase (Versão Compatível - Ideal para rodar direto no HTML) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
     
     <style>
         :root {
-            --primary: #1a365d;
-            --secondary: #2d3748;
-            --accent: #e53e3e;
-            --light: #f7fafc;
+            /* NOVA PALETA DE CORES LIANCI/URCA */
+            --primary: #004d40; /* Verde Floresta Escuro */
+            --primary-light: #48a999;
+            --secondary: #333; /* Cinza Escuro para Texto */
+            --accent: #b2945d; /* Dourado/Bronze */
+            --light: #ffffff; /* Branco */
+            --background: #f7f9fc;
+            --text-on-primary: #ffffff;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--light); color: var(--secondary); }
+        body { 
+            font-family: 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: var(--background); 
+            color: var(--secondary); 
+            line-height: 1.6;
+        }
         
-        /* Sidebar/Menu */
-        nav { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;}
-        .menu-links button { background: none; border: none; color: white; cursor: pointer; margin: 0 10px; font-weight: bold; padding: 5px 10px; border-radius: 4px; transition: 0.3s;}
-        .menu-links button:hover { background: rgba(255,255,255,0.2); }
-        .menu-links button.active { background: white; color: var(--primary); }
-        
-        .container { max-width: 1000px; margin: 2rem auto; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        .section { display: none; }
-        .section.active { display: block; }
+        /* ADICIONANDO UM PADRÃO DE FUNDO SUTIL */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM4MDgwODAiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
+            z-index: -1;
+            opacity: 0.5;
+        }
 
-        h2 { border-bottom: 2px solid var(--primary); padding-bottom: 10px; color: var(--primary); }
-        h3 { color: var(--secondary); margin-top: 1.5rem; }
+        /* Sidebar/Menu */
+        nav { 
+            background: var(--primary); 
+            color: var(--text-on-primary); 
+            padding: 1rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* USANDO A LOGO FORNECIDA */
+        .logo-title-container img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            padding: 2px;
+            background-color: white;
+        }
+
+        .menu-links button { 
+            background: none; 
+            border: none; 
+            color: var(--text-on-primary); 
+            cursor: pointer; 
+            margin: 0 10px; 
+            font-weight: 700; 
+            padding: 8px 15px; 
+            border-radius: 30px; /* Cantos arredondados mais modernos */
+            transition: 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .menu-links button:hover { 
+            background: rgba(255,255,255,0.1); 
+        }
+        
+        .menu-links button.active { 
+            background: var(--light); 
+            color: var(--primary); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* CONTAINER PRINCIPAL COMO UM CARTÃO MODERNO */
+        .container { 
+            max-width: 1100px; 
+            margin: 3rem auto; 
+            padding: 2.5rem; 
+            background: var(--light); 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* AMMOSTRA VISUAL PARA A PÁGINA INICIAL */
+        .section.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section { display: none; }
+
+        h2 { 
+            border-bottom: 3px solid var(--primary); 
+            padding-bottom: 15px; 
+            color: var(--primary); 
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.8rem;
+            margin-top: 0;
+        }
+        
+        h3 { 
+            color: var(--primary); 
+            margin-top: 2rem; 
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         
         /* Forms */
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: .5rem; font-weight: bold; font-size: 0.9rem;}
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-family: inherit;}
-        button.btn-action { background: var(--primary); color: white; border: none; padding: 10px 15px; cursor: pointer; font-size: 1rem; border-radius: 4px; font-weight: bold;}
-        button.btn-action:hover { background: #2b6cb0; }
-        button.btn-danger { background: var(--accent); color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;}
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: .6rem; font-weight: 700; font-size: 0.95rem;}
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: inherit;
+            transition: 0.3s;
+            background-color: var(--light);
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 5px rgba(178, 148, 93, 0.3);
+        }
+        
+        button.btn-action { 
+            background: var(--primary); 
+            color: var(--text-on-primary); 
+            border: none; 
+            padding: 12px 25px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            border-radius: 30px; 
+            font-weight: 700;
+            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        button.btn-action:hover { 
+            background: var(--primary-light); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        button.btn-danger { 
+            background: var(--accent); 
+            color: var(--light); 
+            border: none; 
+            padding: 7px 14px; 
+            cursor: pointer; 
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        
+        button.btn-danger:hover {
+            opacity: 0.9;
+        }
 
         /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; }
-        th { background: #edf2f7; font-weight: bold; }
-        tr:nth-child(even) { background-color: #f8fafc; }
+        table { 
+            width: 100%; 
+            border-collapse: separate; /* Permite bordas arredondadas na tabela */
+            border-spacing: 0;
+            margin-top: 1rem; 
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid #e0e0e0;}
+        
+        th { 
+            background: #f8fafc; 
+            font-weight: 700; 
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        
+        tr:nth-child(even) { background-color: #fafafa; }
+        
+        tr:hover {
+            background-color: #f1f8e9;
+        }
 
         /* Admin Only Elements */
-        .admin-only { display: none; background: #ebf8ff; padding: 15px; border-left: 4px solid #3182ce; border-radius: 4px; margin-top: 1rem; margin-bottom: 1rem;}
+        .admin-only { 
+            display: none; 
+            background: #fafafa; /* Removido o azul claro, visual mais limpo */
+            padding: 25px; 
+            border: 2px solid var(--accent); /* Borda dourada em vez de azul/vermelha */
+            border-radius: 12px; 
+            margin-top: 1.5rem; 
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(178, 148, 93, 0.1);
+        }
         
         /* Badges */
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;}
-        .badge-estagio { background: #bee3f8; color: #2b6cb0; }
-        .badge-liga { background: #fed7d7; color: #9b2c2c; }
+        .badge { 
+            padding: 6px 12px; 
+            border-radius: 30px; 
+            font-size: 0.8rem; 
+            font-weight: 700;
+            text-transform: uppercase;
+        }
         
-        .category-block { margin-bottom: 2rem; }
-        .material-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; align-items: center;}
-        .material-item a { color: var(--primary); text-decoration: none; font-weight: bold;}
-        .material-item a:hover { text-decoration: underline; }
+        .badge-estagio { 
+            background: #e0f2f1; /* Verde pálido */
+            color: #00796b; 
+        }
+        
+        .badge-liga { 
+            background: #fdfae6; /* Dourado pálido */
+            color: #795548; /* Tom marrom para combinar */
+            border: 1px solid var(--accent);
+        }
+        
+        .category-block { margin-bottom: 2.5rem; }
+        
+        .material-item { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 15px; 
+            border-bottom: 1px solid #e0e0e0; 
+            align-items: center;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        
+        .material-item:hover {
+            background-color: #fafafa;
+        }
+        
+        .material-item a { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        
+        .material-item a:hover { 
+            color: var(--primary-light);
+            text-decoration: underline; 
+        }
+
+        /* HOME PAGE AMM OSTRA VISUAL */
+        #home-visual-context {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMGgxMDB2MTAwSDBWMHptMjAgMjBoMjB2MjBIMjBWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6IiBmaWxsPSIjMDY0YjU4IiBmaWxsLW9wYWNpdHk9IjAuMDE1Ii8+PC9zdmc+');
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .section.active > * { position: relative; z-index: 1; }
+        
     </style>
 </head>
 <body>
 
 <nav>
-    <strong>LIGA DE CIRURGIA - PORTAL</strong>
-    <div class="menu-links">
-        <button id="nav-frequencia" class="active" onclick="showSection('frequencia')">Frequência</button>
-        <button id="nav-biblioteca" onclick="showSection('biblioteca')">Biblioteca</button>
-        <button id="nav-membros" class="admin-only" style="display:none;" onclick="showSection('membros')">Gestão de Membros</button>
-        <button id="btn-login" onclick="toggleLogin()" style="background: var(--secondary); color: white;">Acesso Sec.</button>
-    </div>
-</nav>
-
-<div class="container">
-    
-    <!-- FREQUENCIA (Visão Geral e Chamada) -->
-    <section id="frequencia" class="section active">
-        <h2>Frequência dos Membros</h2>
-        <p>Acompanhe o painel de presenças e faltas da liga.</p>
-
-        <!-- PAINEL ADMIN: FAZER CHAMADA -->
-        <div class="admin-only">
-            <h3>📝 Registrar Nova Chamada</h3>
-            <div class="form-group">
-                <label>Tema / Descrição da Aula:</label>
-                <input type="text" id="tema-aula" placeholder="Ex: Aula de Suturas - 12/05">
-            </div>
-            <p style="font-weight: bold; margin-bottom: 5px;">Selecione os membros PRESENTES:</p>
-            <div id="lista-chamada" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: white; padding: 10px; border-radius: 4px; border: 1px solid #cbd5e0;">
-                <!-- Preenchido via JS -->
-            </div>
-            <br>
-            <button class="btn-action" onclick="salvarChamada()">Salvar Chamada</button>
-        </div>
-
-        <!-- TABELA PÚBLICA -->
-        <div style="overflow-x: auto;">
-            <table id="tabela-frequencia">
-                <thead>
-                    <tr>
-                        <th>Membro</th>
-                        <th style="text-align: center;">Presenças</th>
-                        <th style="text-align: center;">Faltas</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-frequencia">
-                    <tr><td colspan="3">Carregando dados...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- BIBLIOTECA -->
-    <section id="biblioteca" class="section">
-        <h2>Biblioteca Digital</h2>
-        <p>Acesse os materiais de estudo, protocolos e atas da liga.</p>
-
-        <!-- PAINEL ADMIN: ADICIONAR MATERIAL -->
-        <div class="admin-only">
-            <h3>📚 Adicionar Novo Material</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-group">
-                    <label>Título do Material:</label>
-                    <input type="text" id="mat-titulo" placeholder="Ex: Protocolo de Apendicite">
-                </div>
-                <div class="form-group">
-                    <label>Categoria:</label>
-                    <input type="text" id="mat-categoria" list="categorias-list" placeholder="Ex: Atas, Artigos, Protocolos...">
-                    <datalist id="categorias-list">
-                        <option value="Atas">
-                        <option value="Artigos">
-                        <option value="Protocolos">
-                    </datalist>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Tipo de Conteúdo:</label>
-                <select id="mat-tipo" onchange="toggleMatTipo()">
-                    <option value="arquivo">Fazer Upload de Arquivo (PDF, Imagem)</option>
-                    <option value="link">Adicionar Link ou Texto Longo</option>
-                </select>
-            </div>
-            <div class="form-group" id="div-upload">
-                <input type="file" id="mat-arquivo">
-            </div>
-            <div class="form-group" id="div-link" style="display: none;">
-                <textarea id="mat-link" rows="3" placeholder="Cole o link (Google Drive, Youtube, etc) ou digite um texto..."></textarea>
-            </div>
-            
-            <button class="btn-action" onclick="salvarMaterial()">Publicar Material</button>
-        </div>
-
-        <!-- ACERVO PÚBLICO -->
-        <div id="acervo-biblioteca">
-            <!-- Preenchido via JS, separado por categorias -->
-            <p>Carregando materiais...</p>
-        </div>
-    </section>
-
-    <!-- GESTÃO DE MEMBROS (SOMENTE ADMIN) -->
-    <section id="membros" class="section">
-        <h2>Gestão de Membros</h2>
-        
-        <div class="admin-only" style="display: block;">
-            <h3>Cadastrar Novo Membro</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-group"><label>Nome:</label><input type="text" id="adm-nome"></div>
-                <div class="form-group"><label>Matrícula:</label><input type="text" id="adm-mat"></div>
-                <div class="form-group">
-                    <label>Semestre:</label>
-                    <select id="adm-sem">
-                        <option>1º Semestre</option><option>2º Semestre</option><option>3º Semestre</option>
-                        <option>4º Semestre</option><option>5º Semestre</option><option>6º Semestre</option>
-                        <option>7º Semestre</option><option>8º Semestre</option><option>9º Semestre</option>
-                        <option>10º Semestre</option><option>11º Semestre</option><option>12º Semestre</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Cargo:</label><input type="text" id="adm-cargo" placeholder="Ex: Ligante, Diretor..."></div>
-                <div class="form-group">
-                    <label>Modalidade:</label>
-                    <select id="adm-mod">
-                        <option value="Estágio + Liga">Estágio + Liga</option>
-                        <option value="Só Liga">Só Liga</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-action" onclick="cadastrarMembro()">Salvar Membro</button>
-
-            <h3 style="margin-top: 2rem;">Membros Cadastrados</h3>
-            <table id="tabela-membros-admin">
-                <thead>
-                    <tr><th>Nome</th><th>Matrícula</th><th>Modalidade</th><th>Ação</th></tr>
-                </thead>
-                <tbody id="tbody-membros-admin"></tbody>
-            </table>
-        </div>
-    </section>
-
-</div>
-
-<script>
-    // --- CONFIGURAÇÃO FIREBASE ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyA2ef4mY9sm-cVPkAq0bwzBjsgmRLN2_jQ",
-        authDomain: "portal-liga-de-cirurgia.firebaseapp.com",
-        databaseURL: "https://portal-liga-de-cirurgia-default-rtdb.firebaseio.com",
-        projectId: "portal-liga-de-cirurgia",
-        storageBucket: "portal-liga-de-cirurgia.firebasestorage.app",
-        messagingSenderId: "408679438531",
-        appId: "1:408679438531:web:46667abc7bcdd9b9d2ea76"
-    };
-
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const storage = firebase.storage();
-
-    // --- CONTROLE DE NAVEGAÇÃO ---
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        
-        document.querySelectorAll('.menu-links button').forEach(b => b.classList.remove('active'));
-        document.getElementById('nav-' + id).classList.add('active');
-
-        if(id === 'frequencia') carregarDadosFrequencia();
-        if(id === 'biblioteca') carregarBiblioteca();
-        if(id === 'membros') carregarMembrosAdmin();
-    }
-
-    // --- AUTENTICAÇÃO E PERSISTÊNCIA (ADMIN) ---
-    auth.onAuthStateChanged((user) => {
-        const btnLogin = document.getElementById('btn-login');
-        const adminElements = document.querySelectorAll('.admin-only');
-        const navMembros = document.getElementById('nav-membros');
-
-        if (user) {
-            // Logado como secretaria
-            btnLogin.innerText = 'Sair do Sistema';
-            btnLogin.style.background = 'var(--accent)';
-            navMembros.style.display = 'inline-block';
-            adminElements.forEach(el => {
-                if(el.closest('#membros') === null) el.style.display = 'block';
-            });
-        } else {
-            // Visitante / Membro comum
-            btnLogin.innerText = 'Acesso Sec.';
-            btnLogin.style.background = 'var(--secondary)';
-            navMembros.style.display = 'none';
-            adminElements.forEach(el => el.style.display = 'none');
-            if(document.getElementById('membros').classList.contains('active')) {
-                showSection('frequencia');
-            }
-        }
-    });
-
-    function toggleLogin() {
-        if (auth.currentUser) {
-            auth.signOut().then(() => alert("Você saiu do sistema."));
-        } else {
-            const email = prompt("E-mail da Secretaria:");
-            if(!email) return;
-            const senha = prompt("Senha:");
-            auth.signInWithEmailAndPassword(email, senha)
-                .catch(error => alert("Erro ao logar. Verifique se o e-mail e a senha estão corretos no Authentication do Firebase."));
-        }
-    }
-
-    // --- CARREGAR DADOS DE FREQUÊNCIA ---
-    async function carregarDadosFrequencia() {
-        const tbody = document.getElementById('tbody-frequencia');
-        const listaChamada = document.getElementById('lista-chamada');
-        
-        tbody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
-        listaChamada.innerHTML = '';
-
-        try {
-            const aulasSnap = await db.collection("aulas").get();
-            const totalAulas = aulasSnap.size;
-
-            const membrosSnap = await db.collection("membros").get();
-            
-            tbody.innerHTML = ''; 
-
-            membrosSnap.forEach((doc) => {
-                const m = doc.data();
-                const membroId = doc.id;
-                
-                let presencas = 0;
-                aulasSnap.forEach(aulaDoc => {
-                    const aula = aulaDoc.data();
-                    if(aula.presentes && aula.presentes.includes(membroId)) {
-                        presencas++;
-                    }
-                });
-
-                const faltas = totalAulas - presencas;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${m.nome}</strong></td>
-                        <td style="text-align: center; color: green; font-weight: bold;">${presencas}</td>
-                        <td style="text-align: center; color: red; font-weight: bold;">${faltas}</td>
-                    </tr>
-                `;
-
-                listaChamada.innerHTML += `
-                    <label style="font-weight: normal; cursor: pointer;">
-                        <input type="checkbox" class="check-presenca" value="${membroId}"> 
-                        ${m.nome}
-                    </label>
-                `;
-            });
-
-            if(membrosSnap.empty) {
-                tbody.innerHTML = '<tr><td colspan="3">Nenhum membro cadastrado.</td></tr>';
-            }
-
-        } catch(e) {
-            console.error(e);
-            tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar dados. Verifique as regras do Firestore.</td></tr>';
-        }
-    }
-
-    // --- SALVAR CHAMADA (ADMIN) ---
-    function salvarChamada() {
-        const tema = document.getElementById('tema-aula').value;
-        if(!tema) return alert("Digite o tema ou data da aula!");
-
-        const checkboxes = document.querySelectorAll('.check-presenca');
-        const presentes = [];
-        
-        checkboxes.forEach(chk => {
-            if(chk.checked) presentes.push(chk.value);
-        });
-
-        const confirmacao = confirm(`Salvar aula "${tema}" com ${presentes.length} presentes?`);
-        if(!confirmacao) return;
-
-        db.collection("aulas").add({
-            tema: tema,
-            dataCadastro: new Date().toLocaleDateString(),
-            presentes: presentes,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            alert("Chamada salva com sucesso!");
-            document.getElementById('tema-aula').value = '';
-            carregarDadosFrequencia();
-        }).catch(e => alert("Erro ao salvar: " + e.message));
-    }
-
-    // --- GESTÃO DE MEMBROS (ADMIN) ---
-    function cadastrarMembro() {
-        const nome = document.getElementById('adm-nome').value;
-        const matricula = document.getElementById('adm-mat').value;
-        
-        if(!nome || !matricula) return alert("Nome e matrícula são obrigatórios!");
-
-        const dados = {
-            nome: nome,
-            matricula: matricula,
-            semestre: document.getElementById('adm-sem').value,
-            cargo: document.getElementById('adm-cargo').value,
-            modalidade: document.getElementById('adm-mod').value,
-            dataCadastro: new Date().toLocaleDateString()
-        };
-
-        db.collection("membros").add(dados).then(() => {
-            alert("Membro cadastrado!");
-            document.getElementById('adm-nome').value = '';
-            document.getElementById('adm-mat').value = '';
-            document.getElementById('adm-cargo').value = '';
-            carregarMembrosAdmin();
-        });
-    }
-
-    function carregarMembrosAdmin() {
-        const tbody = document.getElementById('tbody-membros-admin');
-        tbody.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
-
-        db.collection("membros").get().then((snap) => {
-            tbody.innerHTML = '';
-            snap.forEach((doc) => {
-                const m = doc.data();
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${m.nome}</td>
-                        <td>${m.matricula}</td>
-                        <td><span class="badge ${m.modalidade === 'Só Liga' ? 'badge-liga' : 'badge-estagio'}">${m.modalidade}</span></td>
-                        <td>
-                            <button class="btn-danger" onclick="excluirMembro('${doc.id}')">Excluir</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        });
-    }
-
-    function excluirMembro(id) {
-        if(confirm("Tem certeza que deseja excluir este membro?")) {
-            db.collection("membros").doc(id).delete().then(() => {
-                carregarMembrosAdmin();
-            });
-        }
-    }
-
-    // --- BIBLIOTECA (PÚBLICA E ADMIN) ---
-    function toggleMatTipo() {
-        const tipo = document.getElementById('mat-tipo').value;
-        if(tipo === 'arquivo') {
-            document.getElementById('div-upload').style.display = 'block';
-            document.getElementById('div-link').style.display = 'none';
-        } else {
-            document.getElementById('div-upload').style.display = 'none';
-            document.getElementById('div-link').style.display = 'block';
-        }
-    }
-
-    async function salvarMaterial() {
-        const titulo = document.getElementById('mat-titulo').value;
-        let categoria = document.getElementById('mat-categoria').value;
-        const tipo = document.getElementById('mat-tipo').value;
-        
-        if(!titulo || !categoria) return alert("Título e Categoria são obrigatórios!");
-        
-        categoria = categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
-
-        const btn = document.querySelector('#biblioteca .btn-action');
-        btn.innerText = "Enviando...";
-        btn.disabled = true;
-
-        try {
-            let dadosMat = {
-                titulo: titulo,
-                categoria: categoria,
-                dataCadastro: new Date().toLocaleDateString(),
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            if(tipo === 'arquivo') {
-                const file = document.getElementById('mat-arquivo').files[0];
-                if(!file) throw new Error("Selecione um arquivo!");
-                const ref = storage.ref(`biblioteca/${Date.now()}_${file.name}`);
-                await ref.put(file);
-                dadosMat.url = await ref.getDownloadURL();
-                dadosMat.isLink = false;
-            } else {
-                const linkText = document.getElementById('mat-link').value;
-                if(!linkText) throw new Error("Digite o texto ou link!");
-                dadosMat.url = linkText;
-                dadosMat.isLink = linkText.startsWith('http'); 
-                dadosMat.textoCurto = true;
-            }
-
-            await db.collection("materiais").add(dadosMat);
-            alert("Material publicado com sucesso!");
-            
-            document.getElementById('mat-titulo').value = '';
-            document.getElementById('mat-arquivo').value = '';
-            document.getElementById('mat-link').value = '';
-            
-            carregarBiblioteca();
-
-        } catch(e) {
-            alert("Erro: " + e.message);
-        } finally {
-            btn.innerText = "Publicar Material";
-            btn.disabled = false;
-        }
-    }
-
-    function carregarBiblioteca() {
-        const acervo = document.getElementById('acervo-biblioteca');
-        acervo.innerHTML = '<p>Carregando...</p>';
-
-        db.collection("materiais").orderBy("timestamp", "desc").get().then((snap) => {
-            if(snap.empty) {
-                acervo.innerHTML = '<p>Nenhum material cadastrado ainda.</p>';
-                return;
-            }
-
-            const categoriasObj = {};
-            snap.forEach(doc => {
-                const m = doc.data();
-                if(!categoriasObj[m.categoria]) categoriasObj[m.categoria] = [];
-                categoriasObj[m.categoria].push({ id: doc.id, ...m });
-            });
-
-            acervo.innerHTML = '';
-            
-            for (const cat in categoriasObj) {
-                let htmlBloco = `<div class="category-block">
-                                    <h3 style="border-bottom: 2px solid #cbd5e0; padding-bottom: 5px;">📁 ${cat}</h3>`;
-                
-                categoriasObj[cat].forEach(mat => {
-                    let btnExcluir = auth.currentUser ? `<button class="btn-danger" style="font-size:0.7rem;" onclick="excluirMaterial('${mat.id}')">Excluir</button>` : '';
-                    
-                    let linkOuTexto = '';
-                    if(!mat.textoCurto || mat.isLink) {
-                        linkOuTexto = `<a href="${mat.url}" target="_blank">${mat.titulo}</a>`;
-                    } else {
-                        linkOuTexto = `<span><strong>${mat.titulo}</strong>: ${mat.url}</span>`;
-                    }
-
-                    htmlBloco += `
-                        <div class="material-item">
-                            <div>
-                                <span style="font-size:0.8rem; color:#718096;">[${mat.dataCadastro}]</span> 
-                                ${linkOuTexto}
-                            </div>
-                            ${btnExcluir}
-                        </div>
-                    `;
-                });
-
-                htmlBloco += `</div>`;
-                acervo.innerHTML += htmlBloco;
-            }
-        });
-    }
-
-    function excluirMaterial(id) {
-        if(confirm("Excluir este material permanentemente?")) {
-            db.collection("materiais").doc(id).delete().then(() => {
-                carregarBiblioteca();
-            });
-        }
-    }
-
-    // Inicia na aba de Frequência
-    window.onload = () => { showSection('frequencia'); }
-
-</script>
-
-</body>
-</html>
+    <div class="logo-title-container">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADJ0lEQVR4nO2Xv04bQRDGf7vA4DREIgpXhS8An8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVD8AVhttp://googleusercontent.com/image_generation_content/0
